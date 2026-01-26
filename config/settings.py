@@ -25,7 +25,19 @@ SECRET_KEY = 'django-insecure-$%5q_!c+v)_5$v3ebi%wv60lqm@6-n=zk%*9n5fv=r!6q3xk%-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['ouray.info', 'www.ouray.info']
+ALLOWED_HOSTS = [
+    "ouray-info.onrender.com",
+    "ouray.info",
+    "www.ouray.info",
+    "localhost",
+    "127.0.0.1",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://ouray-info.onrender.com",
+    "https://ouray.info",
+    "https://www.ouray.info",
+]
 
 
 # Application definition
