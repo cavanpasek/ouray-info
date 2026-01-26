@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{ b.name }} | Ouray.info</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; }
+      a { text-decoration: none; }
+      .meta { color: #555; }
+    </style>
+  </head>
+  <body>
+    <p><a href="/">← Back to directory</a></p>
+    <h1>{{ b.name }}</h1>
+
+    {% if b.category %}<p class="meta"><b>Category:</b> {{ b.category }}</p>{% endif %}
+    {% if b.address %}<p class="meta"><b>Address:</b> {{ b.address }}</p>{% endif %}
+    {% if b.phone %}<p class="meta"><b>Phone:</b> {{ b.phone }}</p>{% endif %}
+    {% if b.website %}<p class="meta"><b>Website:</b> <a href="{{ b.website }}" target="_blank">{{ b.website }}</a></p>{% endif %}
+
+    {% if b.description %}
+      <h3>About</h3>
+      <p>{{ b.description }}</p>
+    {% endif %}
+  </body>
+</html>
