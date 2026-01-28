@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Ouray.info{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'directory/css/site.css' %}">
+  <style>body{background:#ff00ff !important}</style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{% url 'home' %}">
+        <span class="brand-mark">⛰️</span>
+        <span class="brand-text">
+          <span class="brand-name">Ouray.info</span>
+          <span class="brand-tagline">Local businesses in Ouray, Colorado.</span>
+        </span>
+      </a>
+
+      <nav class="nav">
+        <a class="nav-link" href="{% url 'home' %}">Directory</a>
+        <a class="nav-link" href="/admin/">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© {% now "Y" %} Ouray.info</span>
+      <span class="footer-muted">Built with Django</span>
+    </div>
+  </footer>
+</body>
+</html>
