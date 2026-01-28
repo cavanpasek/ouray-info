@@ -1,26 +1,32 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>{{ b.name }} | Ouray.info</title>
-    <style>
-      body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; }
-      a { text-decoration: none; }
-      .meta { color: #555; }
-    </style>
-  </head>
-  <body>
-    <p><a href="/">← Back to directory</a></p>
-    <h1>{{ b.name }}</h1>
+{% extends "base.html" %}
+{% block title %}{{ b.name }} | Ouray.info{% endblock %}
 
-    {% if b.category %}<p class="meta"><b>Category:</b> {{ b.category }}</p>{% endif %}
-    {% if b.address %}<p class="meta"><b>Address:</b> {{ b.address }}</p>{% endif %}
-    {% if b.phone %}<p class="meta"><b>Phone:</b> {{ b.phone }}</p>{% endif %}
-    {% if b.website %}<p class="meta"><b>Website:</b> <a href="{{ b.website }}" target="_blank">{{ b.website }}</a></p>{% endif %}
+{% block content %}
+  <p><a href="{% url 'home' %}">← Back to directory</a></p>
+
+  <div class="card">
+    <div class="card-top">
+      <h1 class="card-title">{{ b.name }}</h1>
+      {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
+    </div>
+
+    <div class="card-meta">
+      {% if b.address %}
+        <div class="meta-row"><span class="meta-label">Address</span><span class="meta-value">{{ b.address }}</span></div>
+      {% endif %}
+
+      {% if b.phone %}
+        <div class="meta-row"><span class="meta-label">Phone</span><span class="meta-value">{{ b.phone }}</span></div>
+      {% endif %}
+
+      {% if b.website %}
+        <div class="meta-row"><span class="meta-label">Website</span><span class="meta-value"><a href="{{ b.website }}" target="_blank" rel="noopener">{{ b.website }}</a></span></div>
+      {% endif %}
+    </div>
 
     {% if b.description %}
       <h3>About</h3>
       <p>{{ b.description }}</p>
     {% endif %}
-  </body>
-</html>
+  </div>
+{% endblock %}

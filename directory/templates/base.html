@@ -7,7 +7,9 @@
   <title>{% block title %}Ouray.info{% endblock %}</title>
 
   <link rel="stylesheet" href="{% static 'directory/css/site.css' %}">
-  <style>body{background:#ff00ff !important}</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -37,6 +39,7 @@
       <span>© {% now "Y" %} Ouray.info</span>
       <span class="footer-muted">Built with Django</span>
     </div>
-  </footer>
+</footer>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>
