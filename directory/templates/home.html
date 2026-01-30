@@ -1,59 +1,81 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Ouray.info — Directory{% endblock %}
+
+{% block title %}ouray.info — directory{% endblock %}
+
+{% block body_class %}home{% endblock %}
+{% block body_style %}--bg-image: url('{% static "directory/img/ouray-hero.jpg" %}');{% endblock %}
 
 {% block content %}
 
-<section class="hero" style="--hero-image: url('{% static 'directory/img/ouray-hero.jpg' %}');">
-  <div class="hero-overlay"></div>
+<!-- Center title in the middle of the page over the fixed background -->
+<section class="home-hero">
+  <div class="home-hero-inner container">
+    <h1 class="home-title">ouray.info</h1>
+    <p class="home-subtitle">Local businesses in Ouray, Colorado.</p>
 
-  <div class="hero-inner">
-    <h1 class="hero-title">Ouray.info</h1>
-    <p class="hero-subtitle">Local businesses in Ouray, Colorado.</p>
+    <div class="home-meta">
+      {% if businesses %}
+        <span class="meta-chip">{{ businesses|length }} listed</span>
+      {% else %}
+        <span class="meta-chip">No businesses yet</span>
+      {% endif %}
+    </div>
   </div>
 </section>
 
-<section class="content-shell">
-  <div class="section-head">
-    <h2 class="section-title">Businesses</h2>
-    <p class="section-meta">
-      {% if businesses %}
-        {{ businesses|length }} listed
-      {% else %}
-        No businesses yet.
-      {% endif %}
-    </p>
-  </div>
-
-  {% if businesses %}
-    <div class="grid">
-      {% for b in businesses %}
-        <article class="card">
-          <div class="card-top">
-            <h3 class="card-title">
-              <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
-            </h3>
-            {% if b.category %}
-              <span class="pill">{{ b.category }}</span>
-            {% endif %}
-          </div>
-
-          {% if b.description %}
-            <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
-          {% else %}
-            <p class="card-desc card-desc--muted">No description yet.</p>
-          {% endif %}
-
-          <div class="card-actions">
-            <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
-            {% if b.website %}
-              <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
-            {% endif %}
-          </div>
-        </article>
-      {% endfor %}
+<!-- Cards overlap the background; they move + fade as you scroll -->
+<section class="home-content fade-scroll">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">Businesses</h2>
+      <p class="section-meta">
+        {% if businesses %}
+          Browse the directory
+        {% else %}
+          Add one in Admin to see cards appear
+        {% endif %}
+      </p>
     </div>
-  {% endif %}
+
+    {% if businesses %}
+      <div class="grid">
+        {% for b in businesses %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title">
+                <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
+              </h3>
+              {% if b.category %}
+                <span class="pill">{{ b.category }}</span>
+              {% endif %}
+            </div>
+
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}
+                <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state card">
+        <h3 class="card-title">No businesses yet</h3>
+        <p class="card-desc">Go to Admin and add your first listing. Once you do, this page will automatically render the cards here.</p>
+        <div class="card-actions">
+          <a class="btn" href="/admin/">Open Admin</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </section>
 
 {% endblock %}

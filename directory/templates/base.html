@@ -1,30 +1,27 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-{% load static %}
-<!doctype html>
-<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{% block title %}Ouray.info{% endblock %}</title>
 
-  <!-- Clean, modern font -->
+  <!-- Professional font (clean + modern) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Your site css -->
   <link rel="stylesheet" href="{% static 'directory/css/site.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
-<body>
+
+<body class="{% block body_class %}{% endblock %}" style="{% block body_style %}{% endblock %}">
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="{% url 'home' %}">
         <span class="brand-mark">⛰️</span>
         <span class="brand-text">
-          <span class="brand-name">Ouray.info</span>
+          <span class="brand-name">ouray.info</span>
           <span class="brand-tagline">Local businesses in Ouray, Colorado.</span>
         </span>
       </a>
@@ -36,16 +33,65 @@
     </div>
   </header>
 
-  <main class="container">
+  <main>
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>© {% now "Y" %} Ouray.info</span>
+      <span>© {% now "Y" %} ouray.info</span>
       <span class="footer-muted">Built with Django</span>
     </div>
-</footer>
+  </footer>
+
+  <!-- Scroll fade/move effect (only applies where we add .fade-scroll) -->
+  <script>
+    (function () {
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;
+
+      const targets = () => Array.from(document.querySelectorAll('.fade-scroll'));
+      let els = targets();
+      let ticking = false;
+
+      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+      function update() {
+        ticking = false;
+        els = els.length ? els : targets();
+        const vh = window.innerHeight || 800;
+
+        for (const el of els) {
+          const r = el.getBoundingClientRect();
+
+          // progress: 0 when element is comfortably on screen, 1 when it nears/enters header area
+          // We fade as it approaches the top (so scrolling up makes it fade out as it "moves away")
+          const start = vh * 0.35;   // start fading when top is above 35% of viewport
+          const end = 90;            // fully faded near sticky header
+          const p = clamp((start - r.top) / (start - end), 0, 1);
+
+          // move up + fade out
+          const translateY = -p * 28;
+          const opacity = 1 - (p * 0.85);
+
+          el.style.transform = `translateY(${translateY}px)`;
+          el.style.opacity = opacity.toFixed(3);
+        }
+      }
+
+      function onScroll() {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(update);
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      update();
+    })();
+  </script>
+
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
