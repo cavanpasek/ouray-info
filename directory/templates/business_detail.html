@@ -5,7 +5,7 @@
 {% block content %}
 <section class="detail-shell fade-scroll">
   <div class="container">
-    <p class="backlink"><a href="{% url 'home' %}">← Back to directory</a></p>
+    <p class="backlink"><a href="{% url 'home' %}">← Back</a></p>
 
     <div class="detail-grid">
       <div class="card detail-card">
@@ -39,6 +39,13 @@
               <span class="meta-value"><a href="{{ b.website }}" target="_blank" rel="noopener">{{ b.website }}</a></span>
             </div>
           {% endif %}
+        </div>
+
+        <div class="card-actions" style="margin-top:14px;">
+          {% if b.website %}
+            <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit site</a>
+          {% endif %}
+          <a class="btn btn-ghost" href="{% url 'home' %}">Directory</a>
         </div>
       </aside>
     </div>

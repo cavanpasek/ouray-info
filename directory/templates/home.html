@@ -4,11 +4,10 @@
 {% block title %}ouray.info — directory{% endblock %}
 
 {% block body_class %}home{% endblock %}
-{% block body_style %}--bg-image: url('{% static "directory/img/ouray-hero.jpg" %}');{% endblock %}
+{% block body_style %}--bg-image: url('{% static "directory/img/abrams-image.jpg" %}');{% endblock %}
 
 {% block content %}
 
-<!-- Center title in the middle of the page over the fixed background -->
 <section class="home-hero">
   <div class="home-hero-inner container">
     <h1 class="home-title">ouray.info</h1>
@@ -24,7 +23,6 @@
   </div>
 </section>
 
-<!-- Cards overlap the background; they move + fade as you scroll -->
 <section class="home-content fade-scroll">
   <div class="container">
     <div class="section-head">
@@ -33,7 +31,7 @@
         {% if businesses %}
           Browse the directory
         {% else %}
-          Add one in Admin to see cards appear
+          Add one at /admin to see cards appear
         {% endif %}
       </p>
     </div>
@@ -69,9 +67,9 @@
     {% else %}
       <div class="empty-state card">
         <h3 class="card-title">No businesses yet</h3>
-        <p class="card-desc">Go to Admin and add your first listing. Once you do, this page will automatically render the cards here.</p>
+        <p class="card-desc">Go to <span class="mono">/admin</span> and add your first listing. This page will automatically update.</p>
         <div class="card-actions">
-          <a class="btn" href="/admin/">Open Admin</a>
+          <a class="btn" href="/admin/">Open /admin</a>
         </div>
       </div>
     {% endif %}

@@ -4,26 +4,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>{% block title %}Ouray.info{% endblock %}</title>
+  <title>{% block title %}ouray.info{% endblock %}</title>
 
-  <!-- Professional font (clean + modern) -->
+  <!-- Professional font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="{% static 'directory/css/site.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
 
 <body class="{% block body_class %}{% endblock %}" style="{% block body_style %}{% endblock %}">
-
-      <nav class="nav">
-        <a class="nav-link" href="{% url 'home' %}">Directory</a>
-        <a class="nav-link" href="/admin/">Admin</a>
-      </nav>
-    </div>
-  </header>
-
   <main>
     {% block content %}{% endblock %}
   </main>
@@ -31,11 +23,11 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <span>© {% now "Y" %} ouray.info</span>
-      <span class="footer-muted">Built with Django</span>
+      <span class="footer-muted">/admin</span>
     </div>
   </footer>
 
-  <!-- Scroll fade/move effect (only applies where we add .fade-scroll) -->
+  <!-- Scroll fade/move effect -->
   <script>
     (function () {
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -55,15 +47,13 @@
         for (const el of els) {
           const r = el.getBoundingClientRect();
 
-          // progress: 0 when element is comfortably on screen, 1 when it nears/enters header area
-          // We fade as it approaches the top (so scrolling up makes it fade out as it "moves away")
-          const start = vh * 0.35;   // start fading when top is above 35% of viewport
-          const end = 90;            // fully faded near sticky header
+          // Fade as the element approaches the top of the viewport
+          const start = vh * 0.40;
+          const end = 18; // no header now; fade near top edge
           const p = clamp((start - r.top) / (start - end), 0, 1);
 
-          // move up + fade out
-          const translateY = -p * 28;
-          const opacity = 1 - (p * 0.85);
+          const translateY = -p * 30;
+          const opacity = 1 - (p * 0.88);
 
           el.style.transform = `translateY(${translateY}px)`;
           el.style.opacity = opacity.toFixed(3);
