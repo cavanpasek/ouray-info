@@ -1,19 +1,20 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Ouray.info — Directory{% endblock %}
 
 {% block content %}
-  <section class="hero">
-    <h1 class="hero-title">Find local businesses</h1>
-    <p class="hero-subtitle">Browse shops, food, lodging, and services around Ouray.</p>
 
-    <!-- Search UI (we'll wire it up later) -->
-    <form class="search" method="get" action="">
-      <input class="search-input" type="search" name="q" placeholder="Search (name, category, description)..." value="{{ request.GET.q }}">
-      <button class="btn" type="submit">Search</button>
-    </form>
-  </section>
+<section class="hero" style="--hero-image: url('{% static 'directory/img/ouray-hero.jpg' %}');">
+  <div class="hero-overlay"></div>
 
-  <section class="section-head">
+  <div class="hero-inner">
+    <h1 class="hero-title">Ouray.info</h1>
+    <p class="hero-subtitle">Local businesses in Ouray, Colorado.</p>
+  </div>
+</section>
+
+<section class="content-shell">
+  <div class="section-head">
     <h2 class="section-title">Businesses</h2>
     <p class="section-meta">
       {% if businesses %}
@@ -22,7 +23,7 @@
         No businesses yet.
       {% endif %}
     </p>
-  </section>
+  </div>
 
   {% if businesses %}
     <div class="grid">
@@ -32,7 +33,6 @@
             <h3 class="card-title">
               <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
             </h3>
-
             {% if b.category %}
               <span class="pill">{{ b.category }}</span>
             {% endif %}
@@ -44,25 +44,8 @@
             <p class="card-desc card-desc--muted">No description yet.</p>
           {% endif %}
 
-          <div class="card-meta">
-            {% if b.address %}
-              <div class="meta-row">
-                <span class="meta-label">Address</span>
-                <span class="meta-value">{{ b.address }}</span>
-              </div>
-            {% endif %}
-
-            {% if b.phone %}
-              <div class="meta-row">
-                <span class="meta-label">Phone</span>
-                <span class="meta-value">{{ b.phone }}</span>
-              </div>
-            {% endif %}
-          </div>
-
           <div class="card-actions">
             <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
-
             {% if b.website %}
               <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
             {% endif %}
@@ -71,4 +54,6 @@
       {% endfor %}
     </div>
   {% endif %}
+</section>
+
 {% endblock %}
