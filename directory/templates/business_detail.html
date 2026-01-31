@@ -3,15 +3,16 @@
 
 {% block title %}{{ b.name }} | ouray.info{% endblock %}
 {% block body_class %}detail{% endblock %}
-{% block body_style %}--bg-image: url('{% static "directory/img/abrams-image.jpg" %}');{% endblock %}
 
 {% block extra_head %}
   <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
 {% endblock %}
 
 {% block content %}
-<section class="detail-shell fade-scroll">
-  <div class="container">
+<section class="detail-bg" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
+  <div class="band-overlay"></div>
+
+  <div class="container detail-shell">
     <p class="backlink"><a href="{% url 'home' %}">← Back to directory</a></p>
 
     <div class="detail-wrap">

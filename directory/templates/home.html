@@ -3,16 +3,19 @@
 
 {% block title %}ouray.info — directory{% endblock %}
 {% block body_class %}home{% endblock %}
-{% block body_style %}--bg-image: url('{% static "directory/img/abrams-image.jpg" %}');{% endblock %}
 
 {% block extra_head %}
   <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
+  <link rel="preload" as="image" href="{% static 'directory/img/ouray-hero.jpg' %}">
+  <link rel="preload" as="image" href="{% static 'directory/img/ouray-winter.jpg' %}">
 {% endblock %}
 
 {% block content %}
 
-<section class="home-hero">
-  <div class="home-hero-inner container">
+<!-- HERO band (image) -->
+<section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
+  <div class="band-overlay"></div>
+  <div class="container hero-inner">
     <h1 class="home-title">ouray.info</h1>
     <p class="home-subtitle">Local businesses in Ouray, Colorado.</p>
 
@@ -26,56 +29,145 @@
   </div>
 </section>
 
-<section class="home-content fade-scroll">
-  <div class="container">
-    <div class="section-head">
-      <h2 class="section-title">Businesses</h2>
-      <p class="section-meta">
-        {% if businesses %}
-          Browse the directory
-        {% else %}
-          Add one at /admin to see cards appear
-        {% endif %}
-      </p>
-    </div>
+<!-- Sticky category jump row -->
+<nav class="catbar" aria-label="Categories">
+  <div class="container catbar-inner">
+    <a class="cat-pill" href="#coffee">Coffee</a>
+    <a class="cat-pill" href="#restaurants">Restaurants</a>
+    <a class="cat-pill" href="#shopping">Shopping</a>
+    <a class="cat-pill cat-pill--ghost" href="#other">Other</a>
+  </div>
+</nav>
 
-    {% if businesses %}
-      <div class="grid">
-        {% for b in businesses %}
+<!-- COFFEE band (solid) -->
+<section id="coffee" class="band band--solid band--coffee">
+  <div class="container band-head">
+    <h2 class="band-title">Coffee</h2>
+    <p class="band-meta">Cafés, espresso, bakeries, and quick stops.</p>
+  </div>
+
+  <div class="container" data-fade="true">
+    <div class="grid">
+      {% for b in businesses %}
+        {% if b.category and b.category|lower == "coffee" %}
           <article class="card">
             <div class="card-top">
-              <h3 class="card-title">
-                <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
-              </h3>
-              {% if b.category %}
-                <span class="pill">{{ b.category }}</span>
-              {% endif %}
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              <span class="pill">{{ b.category }}</span>
             </div>
-
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
             {% else %}
               <p class="card-desc card-desc--muted">No description yet.</p>
             {% endif %}
-
             <div class="card-actions">
               <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
-              {% if b.website %}
-                <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
-              {% endif %}
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
             </div>
           </article>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="empty-state card">
-        <h3 class="card-title">No businesses yet</h3>
-        <p class="card-desc">Go to <span class="mono">/admin</span> and add your first listing. This page will automatically update.</p>
-        <div class="card-actions">
-          <a class="btn" href="/admin/">Open /admin</a>
-        </div>
-      </div>
-    {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- RESTAURANTS band (image) -->
+<section id="restaurants" class="band band--image" style="--band-image: url('{% static "directory/img/ouray-hero.jpg" %}');">
+  <div class="band-overlay"></div>
+
+  <div class="container band-head band-head--light">
+    <h2 class="band-title">Restaurants</h2>
+    <p class="band-meta">Sit-down, casual, takeout, and everything in between.</p>
+  </div>
+
+  <div class="container" data-fade="true">
+    <div class="grid">
+      {% for b in businesses %}
+        {% if b.category and b.category|lower == "restaurants" %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              <span class="pill">{{ b.category }}</span>
+            </div>
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- SHOPPING band (solid) -->
+<section id="shopping" class="band band--solid band--shopping">
+  <div class="container band-head">
+    <h2 class="band-title">Shopping</h2>
+    <p class="band-meta">Gifts, gear, local goods, and essentials.</p>
+  </div>
+
+  <div class="container" data-fade="true">
+    <div class="grid">
+      {% for b in businesses %}
+        {% if b.category and b.category|lower == "shopping" %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              <span class="pill">{{ b.category }}</span>
+            </div>
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- OTHER band (image) -->
+<section id="other" class="band band--image" style="--band-image: url('{% static "directory/img/ouray-winter.jpg" %}');">
+  <div class="band-overlay"></div>
+
+  <div class="container band-head band-head--light">
+    <h2 class="band-title">Other</h2>
+    <p class="band-meta">Everything not yet categorized — add more categories anytime.</p>
+  </div>
+
+  <div class="container" data-fade="true">
+    <div class="grid">
+      {% for b in businesses %}
+        {% if not b.category or b.category|lower not in "coffee restaurants shopping" %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
+            </div>
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </section>
 
