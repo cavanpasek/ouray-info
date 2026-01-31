@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{% block title %}ouray.info{% endblock %}</title>
 
-  <!-- Professional font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -19,13 +18,6 @@
   <main>
     {% block content %}{% endblock %}
   </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span>© {% now "Y" %} ouray.info</span>
-      <span class="footer-muted">/admin</span>
-    </div>
-  </footer>
 
   <!-- Scroll fade/move effect -->
   <script>
@@ -46,8 +38,6 @@
 
         for (const el of els) {
           const r = el.getBoundingClientRect();
-
-          // Fade as it approaches top edge (no header now)
           const start = vh * 0.42;
           const end = 18;
           const p = clamp((start - r.top) / (start - end), 0, 1);
