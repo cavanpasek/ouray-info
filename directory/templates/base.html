@@ -21,7 +21,6 @@
 
   <script>
     (function () {
-      // Fade/move only on home, and only on elements that opt-in.
       if (!document.body.classList.contains('home')) return;
 
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

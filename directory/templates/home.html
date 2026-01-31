@@ -12,6 +12,16 @@
 
 {% block content %}
 
+<!-- Top text-only category nav -->
+<nav class="topnav" aria-label="Categories">
+  <div class="container topnav-inner">
+    <a class="topnav-link" href="#coffee">Coffee</a>
+    <a class="topnav-link" href="#restaurants">Restaurants</a>
+    <a class="topnav-link" href="#shopping">Shopping</a>
+    <a class="topnav-link" href="#other">Other</a>
+  </div>
+</nav>
+
 <!-- HERO band (image) -->
 <section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
@@ -28,16 +38,6 @@
     </div>
   </div>
 </section>
-
-<!-- Sticky category jump row -->
-<nav class="catbar" aria-label="Categories">
-  <div class="container catbar-inner">
-    <a class="cat-pill" href="#coffee">Coffee</a>
-    <a class="cat-pill" href="#restaurants">Restaurants</a>
-    <a class="cat-pill" href="#shopping">Shopping</a>
-    <a class="cat-pill cat-pill--ghost" href="#other">Other</a>
-  </div>
-</nav>
 
 <!-- COFFEE band (solid) -->
 <section id="coffee" class="band band--solid band--coffee">
@@ -143,7 +143,7 @@
 
   <div class="container band-head band-head--light">
     <h2 class="band-title">Other</h2>
-    <p class="band-meta">Everything not yet categorized — add more categories anytime.</p>
+    <p class="band-meta">Everything not yet categorized.</p>
   </div>
 
   <div class="container" data-fade="true">
