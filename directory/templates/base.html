@@ -19,7 +19,6 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Scroll fade/move effect -->
   <script>
     (function () {
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -42,11 +41,8 @@
           const end = 18;
           const p = clamp((start - r.top) / (start - end), 0, 1);
 
-          const translateY = -p * 30;
-          const opacity = 1 - (p * 0.88);
-
-          el.style.transform = `translateY(${translateY}px)`;
-          el.style.opacity = opacity.toFixed(3);
+          el.style.transform = `translateY(${-p * 30}px)`;
+          el.style.opacity = (1 - (p * 0.88)).toFixed(3);
         }
       }
 

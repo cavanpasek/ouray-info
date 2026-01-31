@@ -26,59 +26,56 @@
   </div>
 </section>
 
-<!-- IMPORTANT: this wrapper adds localized contrast behind the cards -->
 <section class="home-content fade-scroll">
-  <div class="content-backdrop">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="section-title">Businesses</h2>
-        <p class="section-meta">
-          {% if businesses %}
-            Browse the directory
-          {% else %}
-            Add one at /admin to see cards appear
-          {% endif %}
-        </p>
-      </div>
-
-      {% if businesses %}
-        <div class="grid">
-          {% for b in businesses %}
-            <article class="card">
-              <div class="card-top">
-                <h3 class="card-title">
-                  <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
-                </h3>
-                {% if b.category %}
-                  <span class="pill">{{ b.category }}</span>
-                {% endif %}
-              </div>
-
-              {% if b.description %}
-                <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
-              {% else %}
-                <p class="card-desc card-desc--muted">No description yet.</p>
-              {% endif %}
-
-              <div class="card-actions">
-                <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
-                {% if b.website %}
-                  <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
-                {% endif %}
-              </div>
-            </article>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="empty-state card">
-          <h3 class="card-title">No businesses yet</h3>
-          <p class="card-desc">Go to <span class="mono">/admin</span> and add your first listing. This page will automatically update.</p>
-          <div class="card-actions">
-            <a class="btn" href="/admin/">Open /admin</a>
-          </div>
-        </div>
-      {% endif %}
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">Businesses</h2>
+      <p class="section-meta">
+        {% if businesses %}
+          Browse the directory
+        {% else %}
+          Add one at /admin to see cards appear
+        {% endif %}
+      </p>
     </div>
+
+    {% if businesses %}
+      <div class="grid">
+        {% for b in businesses %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title">
+                <a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a>
+              </h3>
+              {% if b.category %}
+                <span class="pill">{{ b.category }}</span>
+              {% endif %}
+            </div>
+
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}
+                <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>
+              {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state card">
+        <h3 class="card-title">No businesses yet</h3>
+        <p class="card-desc">Go to <span class="mono">/admin</span> and add your first listing. This page will automatically update.</p>
+        <div class="card-actions">
+          <a class="btn" href="/admin/">Open /admin</a>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </section>
 
