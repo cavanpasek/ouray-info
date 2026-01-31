@@ -47,9 +47,9 @@
         for (const el of els) {
           const r = el.getBoundingClientRect();
 
-          // Fade as the element approaches the top of the viewport
-          const start = vh * 0.40;
-          const end = 18; // no header now; fade near top edge
+          // Fade as it approaches top edge (no header now)
+          const start = vh * 0.42;
+          const end = 18;
           const p = clamp((start - r.top) / (start - end), 0, 1);
 
           const translateY = -p * 30;

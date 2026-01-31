@@ -8,7 +8,7 @@
     <p class="backlink"><a href="{% url 'home' %}">← Back</a></p>
 
     <div class="detail-grid">
-      <div class="card detail-card">
+      <div class="card detail-card detail-card--strong">
         <div class="card-top">
           <h1 class="detail-title">{{ b.name }}</h1>
           {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
@@ -21,7 +21,7 @@
         {% endif %}
       </div>
 
-      <aside class="card detail-meta">
+      <aside class="card detail-meta detail-card--strong">
         <h3 class="detail-meta-title">Details</h3>
 
         <div class="meta-list">

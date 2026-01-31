@@ -2,9 +2,12 @@
 {% load static %}
 
 {% block title %}ouray.info — directory{% endblock %}
-
 {% block body_class %}home{% endblock %}
 {% block body_style %}--bg-image: url('{% static "directory/img/abrams-image.jpg" %}');{% endblock %}
+
+{% block extra_head %}
+  <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
+{% endblock %}
 
 {% block content %}
 

@@ -1,17 +1,26 @@
 :root{
-  /* Lighter, less “night mode” */
-  --bg: #f6f8fb;                  /* fallback if no image */
-  --text: rgba(10,14,20,0.92);
-  --muted: rgba(10,14,20,0.68);
+  /* Palette */
+  --prussian: #000022;
+  --navy: #001242;
+  --ocean: #0094C6;
+  --baltic: #005E7C;
+  --ink: #040F16;
 
-  /* “Glass” that works on brighter backgrounds */
-  --card: rgba(255,255,255,0.62);
-  --card-strong: rgba(255,255,255,0.72);
+  /* UI tokens */
+  --bg: var(--ink);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.72);
 
-  --stroke: rgba(10,14,20,0.14);
-  --shadow: 0 18px 50px rgba(0,0,0,0.14);
+  --stroke: rgba(255,255,255,0.14);
+  --stroke-strong: rgba(255,255,255,0.20);
 
+  --shadow: 0 20px 60px rgba(0,0,0,0.35);
   --radius: 18px;
+
+  /* Glass surfaces (tinted in your blues) */
+  --card: rgba(0, 18, 66, 0.48);          /* deep navy glass */
+  --card-strong: rgba(0, 18, 66, 0.68);   /* stronger for detail pages */
+  --chip: rgba(0, 94, 124, 0.28);         /* baltic tint */
 }
 
 *{ box-sizing: border-box; }
@@ -20,7 +29,9 @@ html, body{ height: 100%; }
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg);
+  background: radial-gradient(1200px 600px at 20% 0%, rgba(0,148,198,0.10), transparent 55%),
+              radial-gradient(900px 600px at 80% 10%, rgba(0,94,124,0.12), transparent 55%),
+              var(--bg);
   color: var(--text);
   overflow-x: hidden;
 }
@@ -30,7 +41,7 @@ body{
   margin: 0 auto;
 }
 
-/* Full-page fixed background image for home */
+/* Home: fixed background image */
 body.home::before{
   content:"";
   position: fixed;
@@ -40,14 +51,14 @@ body.home::before{
   z-index: -3;
 }
 
-/* Light overlay so the page feels brighter, not dark */
+/* Weaker overlay (less fade/gradient than before) */
 body.home::after{
   content:"";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(900px 600px at 30% 20%, rgba(255,255,255,0.45), transparent 60%),
-    linear-gradient(to bottom, rgba(255,255,255,0.22), rgba(255,255,255,0.55) 55%, rgba(255,255,255,0.72));
+    radial-gradient(900px 600px at 30% 20%, rgba(0,148,198,0.10), transparent 60%),
+    linear-gradient(to bottom, rgba(4,15,22,0.08), rgba(4,15,22,0.22) 55%, rgba(4,15,22,0.30));
   z-index: -2;
 }
 
@@ -58,9 +69,7 @@ body.home::after{
   align-items: center;
   padding: 56px 0 18px;
 }
-.home-hero-inner{
-  text-align: center;
-}
+.home-hero-inner{ text-align: center; }
 
 .home-title{
   margin: 0;
@@ -68,17 +77,16 @@ body.home::after{
   font-weight: 900;
   letter-spacing: -1px;
   text-transform: lowercase;
-  color: rgba(10,14,20,0.92);
-  text-shadow: 0 18px 50px rgba(0,0,0,0.12);
+  text-shadow: 0 18px 50px rgba(0,0,0,0.45);
 }
 
 .home-subtitle{
   margin: 14px auto 0;
   max-width: 62ch;
-  color: rgba(10,14,20,0.74);
+  color: rgba(255,255,255,0.80);
   font-size: 16px;
   line-height: 1.65;
-  text-shadow: 0 18px 50px rgba(0,0,0,0.10);
+  text-shadow: 0 18px 50px rgba(0,0,0,0.35);
 }
 
 .home-meta{
@@ -87,17 +95,16 @@ body.home::after{
   justify-content:center;
   gap: 10px;
 }
-
 .meta-chip{
   display:inline-flex;
   align-items:center;
   padding: 9px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(10,14,20,0.14);
-  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0, 18, 66, 0.35);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  color: rgba(10,14,20,0.78);
+  color: rgba(255,255,255,0.88);
   font-weight: 650;
   font-size: 13px;
 }
@@ -123,7 +130,7 @@ body.home::after{
   margin: 0 0 16px;
 }
 .section-title{ margin: 0; font-size: 18px; letter-spacing: 0.2px; }
-.section-meta{ margin: 0; color: rgba(10,14,20,0.62); font-size: 13px; }
+.section-meta{ margin: 0; color: rgba(255,255,255,0.72); font-size: 13px; }
 
 /* Grid */
 .grid{
@@ -139,7 +146,7 @@ body.home::after{
   .home-content{ margin-top: -100px; }
 }
 
-/* Glass cards (lighter) */
+/* Cards (glass, tinted blue) */
 .card{
   background: var(--card);
   border: 1px solid var(--stroke);
@@ -163,16 +170,15 @@ body.home::after{
   font-weight: 850;
   letter-spacing: -0.1px;
 }
-
 .card-title a{
-  color: rgba(10,14,20,0.90);
+  color: rgba(255,255,255,0.95);
   text-decoration:none;
 }
 .card-title a:hover{ text-decoration: underline; }
 
 .card-desc{
   margin: 10px 0 0;
-  color: rgba(10,14,20,0.70);
+  color: rgba(255,255,255,0.78);
   line-height: 1.55;
   font-size: 13px;
 }
@@ -189,36 +195,44 @@ body.home::after{
   align-items:center;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(10,14,20,0.14);
-  background: rgba(255,255,255,0.60);
-  color: rgba(10,14,20,0.78);
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0, 94, 124, 0.25);
+  color: rgba(255,255,255,0.92);
   font-size: 12px;
   font-weight: 750;
 }
 
+/* Buttons with ocean accent */
 .btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(10,14,20,0.14);
-  background: rgba(255,255,255,0.62);
-  color: rgba(10,14,20,0.86);
+  border: 1px solid rgba(0, 148, 198, 0.35);
+  background: rgba(0, 148, 198, 0.16);
+  color: rgba(255,255,255,0.92);
   text-decoration:none;
   font-weight: 750;
   font-size: 13px;
 }
-.btn:hover{ background: rgba(255,255,255,0.78); }
-.btn-ghost{ background: transparent; }
-
-/* Detail page */
-.detail-shell{
-  padding: 34px 0 72px;
+.btn:hover{
+  background: rgba(0, 148, 198, 0.24);
+  border-color: rgba(0, 148, 198, 0.55);
+}
+.btn-ghost{
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+}
+.btn-ghost:hover{
+  background: rgba(255,255,255,0.10);
 }
 
+/* Detail page layout + high-contrast surfaces */
+.detail-shell{ padding: 34px 0 72px; }
+
 .backlink a{
-  color: rgba(10,14,20,0.75);
+  color: rgba(255,255,255,0.86);
   text-decoration: none;
 }
 .backlink a:hover{ text-decoration: underline; }
@@ -232,17 +246,23 @@ body.home::after{
   .detail-grid{ grid-template-columns: 1fr; }
 }
 
+/* Stronger card background on detail page so text never looks faint */
+.detail-card--strong{
+  background: var(--card-strong);
+  border-color: var(--stroke-strong);
+}
+
 .detail-title{
   margin: 0;
   font-size: clamp(26px, 3.6vw, 38px);
   font-weight: 900;
   letter-spacing: -0.6px;
-  color: rgba(10,14,20,0.92);
+  color: rgba(255,255,255,0.96);
 }
 
 .detail-desc{
   margin: 12px 0 0;
-  color: rgba(10,14,20,0.72);
+  color: rgba(255,255,255,0.84);
   line-height: 1.65;
 }
 .detail-desc--muted{ opacity: 0.82; }
@@ -250,7 +270,7 @@ body.home::after{
 .detail-meta-title{
   margin: 0 0 10px;
   font-size: 13px;
-  color: rgba(10,14,20,0.62);
+  color: rgba(255,255,255,0.72);
   letter-spacing: 0.2px;
   text-transform: uppercase;
 }
@@ -263,35 +283,40 @@ body.home::after{
   gap: 12px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(10,14,20,0.12);
-  background: rgba(255,255,255,0.50);
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0, 94, 124, 0.16);
 }
 
 .meta-label{
-  color: rgba(10,14,20,0.62);
+  color: rgba(255,255,255,0.74);
   font-weight: 650;
   font-size: 12px;
 }
-
 .meta-value{
-  color: rgba(10,14,20,0.84);
+  color: rgba(255,255,255,0.92);
   font-weight: 550;
   font-size: 13px;
   text-align: right;
 }
+.meta-value a{
+  color: rgba(255,255,255,0.95);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 148, 198, 0.35);
+}
+.meta-value a:hover{
+  border-bottom-color: rgba(0, 148, 198, 0.70);
+}
 
-.meta-value a{ color: rgba(10,14,20,0.86); }
-.meta-value a:hover{ text-decoration: underline; }
-
+/* Code-ish */
 .mono{
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.98em;
 }
 
-/* Footer (subtle, no header now) */
+/* Footer */
 .site-footer{
-  border-top: 1px solid rgba(10,14,20,0.10);
-  background: rgba(255,255,255,0.45);
+  border-top: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0, 18, 66, 0.42);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
@@ -299,7 +324,7 @@ body.home::after{
   display:flex;
   justify-content: space-between;
   padding: 18px 0;
-  color: rgba(10,14,20,0.62);
+  color: rgba(255,255,255,0.72);
   font-size: 12px;
 }
 
