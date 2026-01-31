@@ -1,14 +1,13 @@
 :root{
-  /* Palette */
   --prussian: #000022;
   --navy: #001242;
   --ocean: #0094C6;
   --baltic: #005E7C;
   --ink: #040F16;
 
-  /* NEW: gunmetal + ocean mix accent */
-  --accent: #3A6F84;      /* steel/gunmetal + blue */
-  --accent2: #2E5868;     /* darker accent for hover/borders */
+  /* gunmetal + ocean */
+  --accent: #3A6F84;
+  --accent2: #2E5868;
 
   --text: rgba(255,255,255,0.95);
   --muted: rgba(255,255,255,0.78);
@@ -19,6 +18,13 @@
 
   --card: rgba(0, 18, 66, 0.78);
   --card-detail: rgba(0, 18, 66, 0.92);
+
+  /* For snowy section text */
+  --snow-text: rgba(4, 15, 22, 0.92);
+  --snow-muted: rgba(4, 15, 22, 0.72);
+
+  /* JS will set this 0 → 1 */
+  --nav-blur: 0;
 }
 
 *{ box-sizing: border-box; }
@@ -38,7 +44,7 @@ body{
   margin: 0 auto;
 }
 
-/* --- Top text nav (no bubbles, no border line) --- */
+/* --- Topnav blur fades in via --nav-blur --- */
 .topnav{
   position: fixed;
   top: 0;
@@ -46,13 +52,19 @@ body{
   right: 0;
   z-index: 60;
 
-  /* subtle readability without a “line” */
-  background: linear-gradient(to bottom, rgba(4,15,22,0.42), rgba(4,15,22,0.00));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  /* IMPORTANT: no border-bottom line */
+  /* No border line */
   border: none;
+
+  /* Fade in background as you scroll */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(4,15,22, calc(0.08 + (0.32 * var(--nav-blur)))),
+      rgba(4,15,22, 0.00)
+    );
+
+  backdrop-filter: blur(calc(2px + (12px * var(--nav-blur))));
+  -webkit-backdrop-filter: blur(calc(2px + (12px * var(--nav-blur))));
 }
 
 .topnav-inner{
@@ -67,8 +79,8 @@ body{
   font-weight: 750;
   font-size: 13px;
   letter-spacing: 0.3px;
-  color: rgba(255,255,255,0.88);
-  padding: 6px 2px; /* small tap target without bubbles */
+  color: rgba(255,255,255, calc(0.80 + (0.16 * var(--nav-blur))));
+  padding: 6px 2px;
   position: relative;
 }
 
@@ -76,7 +88,6 @@ body{
   color: rgba(255,255,255,0.98);
 }
 
-/* Elegant underline on hover/active feel */
 .topnav-link::after{
   content:"";
   position:absolute;
@@ -95,16 +106,13 @@ body{
   transform: scaleX(1);
 }
 
-/* Offset anchors so nav doesn't cover headings */
 section[id]{ scroll-margin-top: 86px; }
 
-/* ---------- Bands ---------- */
+/* Bands */
 .band{
   position: relative;
   padding: 56px 0 72px;
 }
-
-/* Image band backgrounds */
 .band--image::before,
 .band--hero::before{
   content:"";
@@ -124,12 +132,18 @@ section[id]{ scroll-margin-top: 86px; }
     linear-gradient(to bottom, rgba(4,15,22,0.06), rgba(4,15,22,0.16) 60%, rgba(4,15,22,0.20));
 }
 
-/* Hero spacing accounts for fixed topnav */
+/* Snow overlay slightly lighter so whites stay clean */
+.band-overlay--snow{
+  background:
+    radial-gradient(900px 600px at 30% 20%, rgba(58,111,132,0.06), transparent 62%),
+    linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.10) 55%, rgba(4,15,22,0.10));
+}
+
 .band--hero{
   min-height: 100vh;
   display:flex;
   align-items:center;
-  padding: 96px 0 56px; /* ↑ extra top padding so text isn’t under nav */
+  padding: 96px 0 56px;
 }
 .hero-inner{ text-align:center; }
 
@@ -141,7 +155,6 @@ section[id]{ scroll-margin-top: 86px; }
   text-transform: lowercase;
   text-shadow: 0 18px 50px rgba(0,0,0,0.45);
 }
-
 .home-subtitle{
   margin: 14px auto 0;
   max-width: 62ch;
@@ -150,7 +163,6 @@ section[id]{ scroll-margin-top: 86px; }
   line-height: 1.65;
   text-shadow: 0 18px 50px rgba(0,0,0,0.32);
 }
-
 .home-meta{
   margin-top: 18px;
   display:flex;
@@ -171,7 +183,6 @@ section[id]{ scroll-margin-top: 86px; }
   font-size: 13px;
 }
 
-/* Solid color bands */
 .band--solid{
   background: radial-gradient(1000px 600px at 20% 0%, rgba(58,111,132,0.10), transparent 55%),
               radial-gradient(900px 600px at 90% 10%, rgba(0,94,124,0.12), transparent 60%);
@@ -179,7 +190,6 @@ section[id]{ scroll-margin-top: 86px; }
 .band--coffee{ background-color: var(--prussian); }
 .band--shopping{ background-color: var(--navy); }
 
-/* Band headings */
 .band-head{ margin-bottom: 18px; }
 .band-title{
   margin:0;
@@ -192,7 +202,11 @@ section[id]{ scroll-margin-top: 86px; }
   font-size: 13px;
 }
 
-/* Cards + grid */
+/* Snowy “Other” headings use dark text for contrast */
+.band-head--snow .band-title{ color: var(--snow-text); text-shadow: none; }
+.band-head--snow .band-meta{ color: var(--snow-muted); text-shadow: none; }
+
+/* Grid */
 .grid{
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -217,13 +231,17 @@ section[id]{ scroll-margin-top: 86px; }
   -webkit-backdrop-filter: blur(18px);
 }
 
+.card--snow{
+  /* Slightly brighter card so it doesn't feel muddy over white snow */
+  background: rgba(0, 18, 66, 0.86);
+}
+
 .card-top{
   display:flex;
   align-items:flex-start;
   justify-content: space-between;
   gap: 10px;
 }
-
 .card-title{
   margin: 0;
   font-size: 16px;
@@ -261,8 +279,12 @@ section[id]{ scroll-margin-top: 86px; }
   font-size: 12px;
   font-weight: 750;
 }
+.pill--snow{
+  border-color: rgba(58,111,132,0.60);
+  background: rgba(58,111,132,0.18);
+}
 
-/* Buttons using the new gunmetal-ocean accent */
+/* Buttons */
 .btn{
   display:inline-flex;
   align-items:center;
@@ -289,7 +311,7 @@ section[id]{ scroll-margin-top: 86px; }
 /* Detail page */
 .detail-bg{
   position: relative;
-  padding: 96px 0 90px; /* matches topnav height */
+  padding: 96px 0 90px;
 }
 .detail-bg::before{
   content:"";
@@ -298,6 +320,8 @@ section[id]{ scroll-margin-top: 86px; }
   background: center/cover no-repeat var(--band-image);
   z-index:-2;
 }
+
+.detail-shell{ padding: 0; }
 
 .backlink a{
   color: rgba(255,255,255,0.92);

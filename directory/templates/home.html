@@ -12,7 +12,6 @@
 
 {% block content %}
 
-<!-- Top text-only category nav -->
 <nav class="topnav" aria-label="Categories">
   <div class="container topnav-inner">
     <a class="topnav-link" href="#coffee">Coffee</a>
@@ -22,7 +21,6 @@
   </div>
 </nav>
 
-<!-- HERO band (image) -->
 <section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
   <div class="container hero-inner">
@@ -39,7 +37,6 @@
   </div>
 </section>
 
-<!-- COFFEE band (solid) -->
 <section id="coffee" class="band band--solid band--coffee">
   <div class="container band-head">
     <h2 class="band-title">Coffee</h2>
@@ -71,7 +68,6 @@
   </div>
 </section>
 
-<!-- RESTAURANTS band (image) -->
 <section id="restaurants" class="band band--image" style="--band-image: url('{% static "directory/img/ouray-hero.jpg" %}');">
   <div class="band-overlay"></div>
 
@@ -105,7 +101,6 @@
   </div>
 </section>
 
-<!-- SHOPPING band (solid) -->
 <section id="shopping" class="band band--solid band--shopping">
   <div class="container band-head">
     <h2 class="band-title">Shopping</h2>
@@ -137,11 +132,11 @@
   </div>
 </section>
 
-<!-- OTHER band (image) -->
-<section id="other" class="band band--image" style="--band-image: url('{% static "directory/img/ouray-winter.jpg" %}');">
-  <div class="band-overlay"></div>
+<!-- Snowy image band: use dark text mode for contrast -->
+<section id="other" class="band band--image band--snow" style="--band-image: url('{% static "directory/img/ouray-winter.jpg" %}');">
+  <div class="band-overlay band-overlay--snow"></div>
 
-  <div class="container band-head band-head--light">
+  <div class="container band-head band-head--snow">
     <h2 class="band-title">Other</h2>
     <p class="band-meta">Everything not yet categorized.</p>
   </div>
@@ -150,10 +145,10 @@
     <div class="grid">
       {% for b in businesses %}
         {% if not b.category or b.category|lower not in "coffee restaurants shopping" %}
-          <article class="card">
+          <article class="card card--snow">
             <div class="card-top">
               <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
-              {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
+              {% if b.category %}<span class="pill pill--snow">{{ b.category }}</span>{% endif %}
             </div>
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>

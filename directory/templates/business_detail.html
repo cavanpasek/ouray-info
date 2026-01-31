@@ -9,6 +9,15 @@
 {% endblock %}
 
 {% block content %}
+<nav class="topnav" aria-label="Categories">
+  <div class="container topnav-inner">
+    <a class="topnav-link" href="{% url 'home' %}#coffee">Coffee</a>
+    <a class="topnav-link" href="{% url 'home' %}#restaurants">Restaurants</a>
+    <a class="topnav-link" href="{% url 'home' %}#shopping">Shopping</a>
+    <a class="topnav-link" href="{% url 'home' %}#other">Other</a>
+  </div>
+</nav>
+
 <section class="detail-bg" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
 

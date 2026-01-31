@@ -21,10 +21,30 @@
 
   <script>
     (function () {
+      // Topnav blur fades in as you scroll (home + detail pages)
+      const topnav = document.querySelector('.topnav');
+      if (topnav) {
+        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+        function updateTopnav() {
+          // 0px => 0 blur/opacity, 120px => fully blurred/opaque
+          const y = window.scrollY || 0;
+          const p = clamp(y / 120, 0, 1);
+          topnav.style.setProperty('--nav-blur', prefersReduced ? 1 : p.toFixed(3));
+        }
+
+        window.addEventListener('scroll', updateTopnav, { passive: true });
+        window.addEventListener('resize', updateTopnav);
+        updateTopnav();
+      }
+
+      // Fade/move only on home, and only on elements that opt-in.
       if (!document.body.classList.contains('home')) return;
 
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReduced) return;
+      const prefersReduced2 = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced2) return;
 
       const targets = () => Array.from(document.querySelectorAll('[data-fade="true"]'));
       let els = targets();
