@@ -18,51 +18,57 @@
   </div>
 </nav>
 
-<section class="detail-bg" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
-  <div class="band-overlay"></div>
+<section class="detail-hero" style="--band-image: url('{% if b.hero_image %}{{ b.hero_image.url }}{% else %}{% static "directory/img/abrams-image.jpg" %}{% endif %}');">
+  <div class="detail-overlay"></div>
 
   <div class="container detail-shell">
     <p class="backlink"><a href="{% url 'home' %}">← Back to directory</a></p>
 
-    <div class="detail-wrap">
-      <div class="card detail-card">
-        <div class="detail-head">
-          <div>
-            <h1 class="detail-title">{{ b.name }}</h1>
-            {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
-          </div>
-
-          <div class="detail-cta">
-            {% if b.website %}
-              <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
-            {% endif %}
-          </div>
-        </div>
-
-        {% if b.description %}
-          <p class="detail-desc">{{ b.description }}</p>
+    <header class="detail-header">
+      <div class="detail-brand">
+        {% if b.logo_image %}
+          <img class="detail-logo" src="{{ b.logo_image.url }}" alt="{{ b.name }} logo">
         {% else %}
-          <p class="detail-desc detail-desc--muted">No description yet.</p>
+          <div class="detail-logo detail-logo--fallback">{{ b.name|slice:":1" }}</div>
         {% endif %}
 
-        <div class="detail-meta">
-          {% if b.address %}
-            <div class="meta-row"><span class="meta-label">Address</span><span class="meta-value">{{ b.address }}</span></div>
-          {% endif %}
-          {% if b.phone %}
-            <div class="meta-row"><span class="meta-label">Phone</span><span class="meta-value">{{ b.phone }}</span></div>
-          {% endif %}
-          {% if b.website %}
-            <div class="meta-row">
-              <span class="meta-label">Website</span>
-              <span class="meta-value"><a href="{{ b.website }}" target="_blank" rel="noopener">{{ b.website }}</a></span>
-            </div>
-          {% endif %}
+        <div>
+          <h1 class="detail-title">{{ b.name }}</h1>
+          {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
         </div>
+      </div>
 
-        <div class="card-actions">
-          <a class="btn btn-ghost" href="{% url 'home' %}">Back</a>
-        </div>
+      <div class="detail-cta">
+        {% if b.website %}
+          <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
+        {% endif %}
+              </div>
+    </header>
+
+    <div class="detail-body">
+      {% if b.description %}
+        <p class="detail-desc">{{ b.description }}</p>
+      {% else %}
+        <p class="detail-desc detail-desc--muted">No description yet.</p>
+      {% endif %}
+
+      <div class="detail-meta-grid">
+        {% if b.address %}
+          <div class="meta-row"><span class="meta-label">Address</span><span class="meta-value">{{ b.address }}</span></div>
+        {% endif %}
+        {% if b.phone %}
+          <div class="meta-row"><span class="meta-label">Phone</span><span class="meta-value">{{ b.phone }}</span></div>
+        {% endif %}
+        {% if b.website %}
+          <div class="meta-row">
+            <span class="meta-label">Website</span>
+            <span class="meta-value"><a href="{{ b.website }}" target="_blank" rel="noopener">{{ b.website }}</a></span>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="detail-actions">
+        <a class="btn btn-ghost" href="{% url 'home' %}">Back</a>
       </div>
     </div>
   </div>

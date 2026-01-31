@@ -44,7 +44,7 @@
   </div>
 
   <div class="container" data-fade="true">
-    <div class="grid">
+    <div class="card-row" aria-label="Coffee businesses">
       {% for b in businesses %}
         {% if b.category and b.category|lower == "coffee" %}
           <article class="card">
@@ -77,7 +77,7 @@
   </div>
 
   <div class="container" data-fade="true">
-    <div class="grid">
+    <div class="card-row" aria-label="Restaurant businesses">
       {% for b in businesses %}
         {% if b.category and b.category|lower == "restaurants" %}
           <article class="card">
@@ -108,7 +108,7 @@
   </div>
 
   <div class="container" data-fade="true">
-    <div class="grid">
+    <div class="card-row" aria-label="Shopping businesses">
       {% for b in businesses %}
         {% if b.category and b.category|lower == "shopping" %}
           <article class="card">
@@ -142,7 +142,7 @@
   </div>
 
   <div class="container" data-fade="true">
-    <div class="grid">
+    <div class="card-row" aria-label="Other businesses">
       {% for b in businesses %}
         {% if not b.category or b.category|lower not in "coffee restaurants shopping" %}
           <article class="card card--snow">

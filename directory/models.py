@@ -10,6 +10,8 @@ class Business(models.Model):
     website = models.URLField(blank=True)
     phone = models.CharField(max_length=50, blank=True)
     address = models.CharField(max_length=300, blank=True)
+    hero_image = models.ImageField(upload_to="business_hero/", blank=True, null=True)
+    logo_image = models.ImageField(upload_to="business_logos/", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
