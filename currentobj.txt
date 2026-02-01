@@ -1,33 +1,35 @@
-OBJECTIVE: Implement Google reCAPTCHA v2 ("I'm not a robot") on a new public Contact form with backend verification.
+Add email delivery for the contact form submissions.
 
-IF NO PUBLIC FORM EXISTS:
-- Create a minimal public contact form at /contact/ using a Django template + Django view.
-- The form should POST to the same route.
-- Do not create database models; do not create migrations.
-- On successful submit: show a success message (and optionally log the submission to console).
-- On failed captcha: show a clear error message and do not accept the submission.
+Goal:
+- When a contact form submission passes reCAPTCHA verification, send the message via email.
 
-FILES YOU MAY MODIFY/CREATE:
-- config/settings.py (env var reads only)
-- directory/urls.py (add a contact route)
-- directory/views.py (contact view + captcha verification)
-- directory/templates/directory/contact.html (new template)
-- directory/static/... (ONLY if needed for small styling)
-- Do not add new dependencies.
+Recipients:
+- cavanpasek@gmail.com
+- keatonn@ourayschool.org
+- oliverc@ourayschool.org
 
-RECAPTCHA REQUIREMENTS:
-1. Use reCAPTCHA v2 checkbox (not v3).
-2. Do NOT hardcode keys.
-3. Read RECAPTCHA_SITE_KEY and RECAPTCHA_SECRET_KEY from environment variables.
-4. Backend verification must POST to Google's siteverify endpoint.
-5. If verification fails, reject submission with user-visible error.
-
-DELIVERABLES:
-- Implement the /contact/ page, route, template, and POST handling.
-- Implement backend verification.
-- Provide step-by-step instructions to create reCAPTCHA keys and set env vars locally and on Render.
-- Provide verification commands to run locally.
-
-CONSTRAINTS:
-- Ask before touching any files outside the allowed list.
+Requirements:
+- Do NOT add new Python dependencies.
+- Use Django’s built-in email utilities (django.core.mail).
+- Do NOT store messages in the database.
+- Do NOT expose email addresses in templates.
 - Keep changes minimal and localized.
+
+Implementation details:
+- Configure email settings using environment variables only (no hardcoded credentials).
+- Use a reasonable subject line like: "New Ouray Info Contact Form Submission".
+- Email body should include:
+  - Name
+  - Email
+  - Message
+- Only send the email after reCAPTCHA verification succeeds.
+- If email sending fails, show a user-visible error and do not silently discard the message.
+
+Files you may modify:
+- config/settings.py (email configuration via env vars only)
+- directory/views.py (send email on successful submission)
+
+After implementation:
+- List the exact files changed.
+- Tell me which environment variables I need to set locally and on Render.
+- Tell me how to verify the email sending works.

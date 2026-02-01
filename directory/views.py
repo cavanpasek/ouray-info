@@ -4,6 +4,7 @@ import urllib.parse
 import urllib.request
 
 from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 from .models import Business
 
@@ -57,6 +58,29 @@ def contact(request):
 
         if not data.get("success"):
             context["error"] = "reCAPTCHA verification failed. Please try again."
+            return render(request, "directory/contact.html", context)
+
+        if not settings.DEFAULT_FROM_EMAIL or not settings.EMAIL_HOST:
+            context["error"] = "Email is not configured. Please try again later."
+            return render(request, "directory/contact.html", context)
+
+        subject = "New Ouray Info Contact Form Submission"
+        body = (
+            f"Name: {name}\n"
+            f"Email: {email}\n\n"
+            f"Message:\n{message}\n"
+        )
+
+        try:
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                settings.CONTACT_RECIPIENTS,
+                fail_silently=False,
+            )
+        except Exception:
+            context["error"] = "Email sending failed. Please try again."
             return render(request, "directory/contact.html", context)
 
         context["success"] = "Thanks! Your message has been received."
