@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Contact | ouray.info{% endblock %}
+{% block body_class %}contact{% endblock %}
+
+{% block extra_head %}
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="band band--solid">
+  <div class="container band-head">
+    <h1 class="band-title">Contact</h1>
+    <p class="band-meta">Send a message to ouray.info.</p>
+  </div>
+
+  <div class="container">
+    {% if error %}
+      <p class="band-meta">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+      <p class="band-meta">{{ success }}</p>
+    {% endif %}
+
+    <form method="post" class="card" action="{% url 'contact' %}">
+      {% csrf_token %}
+      <div class="detail-meta-grid">
+        <label class="meta-row">
+          <span class="meta-label">Name</span>
+          <input class="meta-value" type="text" name="name" value="{{ name|default_if_none:'' }}" required>
+        </label>
+        <label class="meta-row">
+          <span class="meta-label">Email</span>
+          <input class="meta-value" type="email" name="email" value="{{ email|default_if_none:'' }}" required>
+        </label>
+        <label class="meta-row">
+          <span class="meta-label">Message</span>
+          <textarea class="meta-value" name="message" rows="5" required>{{ message|default_if_none:'' }}</textarea>
+        </label>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+      </div>
+
+      <div class="detail-actions" style="margin-top: 16px;">
+        <button class="btn" type="submit">Send message</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

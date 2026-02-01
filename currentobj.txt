@@ -1,0 +1,33 @@
+OBJECTIVE: Implement Google reCAPTCHA v2 ("I'm not a robot") on a new public Contact form with backend verification.
+
+IF NO PUBLIC FORM EXISTS:
+- Create a minimal public contact form at /contact/ using a Django template + Django view.
+- The form should POST to the same route.
+- Do not create database models; do not create migrations.
+- On successful submit: show a success message (and optionally log the submission to console).
+- On failed captcha: show a clear error message and do not accept the submission.
+
+FILES YOU MAY MODIFY/CREATE:
+- config/settings.py (env var reads only)
+- directory/urls.py (add a contact route)
+- directory/views.py (contact view + captcha verification)
+- directory/templates/directory/contact.html (new template)
+- directory/static/... (ONLY if needed for small styling)
+- Do not add new dependencies.
+
+RECAPTCHA REQUIREMENTS:
+1. Use reCAPTCHA v2 checkbox (not v3).
+2. Do NOT hardcode keys.
+3. Read RECAPTCHA_SITE_KEY and RECAPTCHA_SECRET_KEY from environment variables.
+4. Backend verification must POST to Google's siteverify endpoint.
+5. If verification fails, reject submission with user-visible error.
+
+DELIVERABLES:
+- Implement the /contact/ page, route, template, and POST handling.
+- Implement backend verification.
+- Provide step-by-step instructions to create reCAPTCHA keys and set env vars locally and on Render.
+- Provide verification commands to run locally.
+
+CONSTRAINTS:
+- Ask before touching any files outside the allowed list.
+- Keep changes minimal and localized.

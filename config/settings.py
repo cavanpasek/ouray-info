@@ -28,6 +28,10 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-insecure-secret-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
+# reCAPTCHA v2 keys (no defaults; must be set via environment variables)
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
+
 ALLOWED_HOSTS = [
     "ouray-info.onrender.com",
     "ouray.info",
