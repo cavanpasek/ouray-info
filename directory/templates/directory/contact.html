@@ -23,7 +23,6 @@
       <p class="band-meta">{{ error }}</p>
     {% endif %}
 
-    <!-- DEBUG site_key={{ site_key }} -->
     <form method="post" class="card contact-form" action="{% url 'contact' %}">
       {% csrf_token %}
       <div class="detail-meta-grid">
