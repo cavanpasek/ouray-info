@@ -26,23 +26,25 @@
 
     <header class="detail-header">
       <div class="detail-brand">
-        {% if b.logo_image %}
-          <img class="detail-logo" src="{{ b.logo_image.url }}" alt="{{ b.name }} logo">
-        {% else %}
-          <div class="detail-logo detail-logo--fallback">{{ b.name|slice:":1" }}</div>
-        {% endif %}
-
         <div>
           <h1 class="detail-title">{{ b.name }}</h1>
           {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
         </div>
       </div>
 
-      <div class="detail-cta">
-        {% if b.website %}
-          <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
+      <div class="detail-side">
+        {% if b.logo_image %}
+          <img class="detail-logo detail-logo--top" src="{{ b.logo_image.url }}" alt="{{ b.name }} logo">
+        {% else %}
+          <div class="detail-logo detail-logo--fallback detail-logo--top">{{ b.name|slice:":1" }}</div>
         {% endif %}
-              </div>
+
+        <div class="detail-cta">
+          {% if b.website %}
+            <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
+          {% endif %}
+        </div>
+      </div>
     </header>
 
     <div class="detail-body">
