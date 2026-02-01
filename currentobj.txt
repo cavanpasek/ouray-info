@@ -1,77 +1,65 @@
-OBJECTIVE: Add an elegant review + bookmarking system to Ouray Info, and automatically sort businesses by reviews.
+OBJECTIVE: UI polish + review/star display improvements + bookmarks navigation.
 
-ASSUMPTIONS (confirm in code):
-- There is a Business model and a business “details” page (e.g., /business/<slug>/ or similar).
-- There is a business listing page that renders cards for all businesses in a category.
+TASK A — Home hero subtitle spacing + remove “10 Listed”
+1) On the home page hero:
+- Move the subtitle under “ouray.info” DOWN slightly so it stays readable against the hero image (increase top margin/padding just a bit).
+- Do not change the hero image, font family, or overall hero layout—just adjust spacing so white text doesn’t disappear.
 
-FEATURES
+2) Remove the “10 Listed” label from the UI entirely.
+- Omit it from the template (not just hide it).
 
-A) Reviews (on each business detail page)
-1) Display:
-   - Average rating (1–5) and total review count near the top of the details page.
-   - A short list of recent reviews (e.g., 5–10) with rating, optional name, date, and comment.
-2) Add Review form UNDER the business details:
-   - Fields: rating (1–5), name (optional), comment (required, max length), optional email (optional).
-   - POST submission with CSRF protection.
-   - After successful POST, redirect back to the same business detail page (PRG pattern).
-3) Anti-spam:
-   - Reuse the existing reCAPTCHA v2 backend verification pattern on review submission (no new dependencies).
-   - Fail closed if captcha fails.
-4) Moderation (keep it simple but safe):
-   - Add Review.is_approved boolean default True OR default False with admin approval (choose the simplest “elegant” approach).
-   - Only approved reviews count toward averages and sorting.
-5) Database:
-   - Add a Review model related to Business via FK.
-   - Run migrations (allowed).
+3) Move the “Sort: ____” control UP to replace where “10 Listed” was.
+- The sort control should appear in that same spot in a clean, balanced way.
+- Keep the control styling consistent with existing design.
 
-B) Bookmarks (no user accounts required)
-1) Add a “Bookmark” toggle button on business detail page (and optionally on cards if easy):
-   - If bookmarked: show “Bookmarked” state; if not: “Bookmark”.
-   - No login: store bookmarks in session (server-side) or signed cookie (choose session for simplicity).
-2) Add a /bookmarks/ page:
-   - Shows the user’s bookmarked businesses as cards (same style as other lists).
-   - Allows removing bookmarks.
-3) UX:
-   - Bookmark action should be a POST (or fetch POST) to avoid caching issues; then redirect back (or update via JS if already used elsewhere).
-   - Keep it elegant and consistent with current design language.
+TASK B — Add “Bookmarked” nav link + bookmarks page access
+1) Add a “Bookmarked” link in the top row navigation on the home page (same row as Coffee/Restaurants/Shopping/Other/Contact).
+- Label: “Bookmarked”
+- It should be placed at the top with the other nav links (a normal nav item, not a button).
+- Link target: /bookmarks/
+- Styling should match existing nav links.
 
-C) Automatically sort businesses by reviews
-1) Default sort on listing pages:
-   - Sort businesses primarily by average rating (desc),
-   - Then by review count (desc),
-   - Then by name (asc) as a stable tie-breaker.
-2) Implementation:
-   - Use Django ORM annotations (Avg/Count) filtered to approved reviews.
-   - Avoid N+1 queries; use select_related/prefetch_related where appropriate.
-3) Add a small UI control (optional but nice):
-   - A dropdown on listing pages: “Sort: Top Rated / Most Reviewed / A–Z”
-   - Default to Top Rated.
+2) Ensure /bookmarks/ page is usable and matches the site style:
+- Uses the same hero background style if other pages do.
+- Shows user bookmarked businesses as cards (same card component).
+- Includes star rating + review count on bookmarked cards (see TASK E).
+
+TASK C — Business detail page: remove letter bubble + separate top-right action bubbles
+1) On the business detail page:
+- Remove the “letter bubble” in the top-right corner (omit from template).
+- Keep “Visit Website” and “Bookmark/Bookmarked” in the top-right, but add spacing so the bubbles DO NOT touch.
+- Maintain consistent bubble styling (same size/shape), just add gap/margin.
+
+TASK D — Star fill display + review count on business detail page
+1) For businesses with approved reviews:
+- Show “# Reviews” to the LEFT (e.g., “12 reviews”).
+- To the RIGHT of that, show a star rating bar using 5 stars that fill from left to right based on average rating (cool “*****” fill effect).
+- Stars should visually fill (not just plain text). Make it elegant (match existing UI, not cartoonish).
+- If there are 0 reviews, show something subtle like “No reviews yet” and do NOT show filled stars.
+
+Implementation guidance:
+- Use average rating (approved reviews only).
+- Use a simple and stable rendering method:
+  - Option A: 5 star icons with a CSS overlay fill based on percentage (recommended)
+  - Option B: render filled vs empty stars based on rounding rules (acceptable)
+- Keep it lightweight: no new dependencies.
+
+TASK E — Show stars + review counts on business cards
+1) On business listing cards (home/category lists and bookmarks list):
+- Display average rating stars + review count (approved reviews only).
+- Keep it compact and readable—ideally under the business name or near the meta line.
+- If 0 reviews, show “No reviews yet” or omit the stars entirely (choose whichever looks more elegant).
 
 CONSTRAINTS
-- No new third-party dependencies.
-- Keep design consistent (reuse existing card and hero styles).
-- Keep changes minimal but complete.
-- Use POST-redirect-get for all form submissions.
-- Ask before making major URL/schema changes, but migrations are allowed.
-
-FILES YOU MAY MODIFY/CREATE (expected)
-- directory/models.py (Review model; possibly a helper method on Business)
-- directory/admin.py (register Review; moderation if needed)
-- directory/views.py (detail view: display + submit review; bookmarks view; bookmarks toggle endpoint)
-- directory/urls.py (routes for review post, bookmarks page, bookmark toggle)
-- templates for business detail + bookmarks page
-- site.css (only if needed to style rating stars / buttons elegantly)
+- Do NOT add new dependencies.
+- Do NOT change database schema (reviews model already exists).
+- Keep changes minimal and localized.
+- Reuse existing styles/components wherever possible; avoid duplicating large CSS blocks.
 
 DELIVERABLES
-1) First: list the exact files and routes you will add/change.
-2) Implement: Review model + migrations, review form, backend verification, display aggregates.
-3) Implement: Bookmark toggle + bookmarks page.
-4) Implement: Listing-page sorting by reviews with ORM annotations.
-5) Provide: commands to run (migrate, runserver) and manual test checklist.
-
-MANUAL TEST CHECKLIST (must pass)
-- Add review with captcha → appears (or pending approval) and averages update.
-- Review submission without captcha → rejected with clear message.
-- Bookmark a business → shows “Bookmarked” and appears in /bookmarks/.
-- Remove bookmark → disappears from /bookmarks/.
-- Listing pages show businesses ordered by rating/count as specified.
+- List exact files you will modify before implementing.
+- Implement the changes.
+- Provide a quick checklist of pages to test:
+  - / (hero subtitle spacing, sort control location, “Bookmarked” link, cards show stars)
+  - /bookmarks/ (cards show stars)
+  - business detail page (no letter bubble, action bubbles spaced, star fill + review count)

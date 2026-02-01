@@ -166,7 +166,7 @@ section[id]{ scroll-margin-top: 86px; }
   text-shadow: 0 18px 50px rgba(0,0,0,0.45);
 }
 .home-subtitle{
-  margin: 14px auto 0;
+  margin: 18px auto 0;
   max-width: 62ch;
   color: rgba(255,255,255,0.86);
   font-size: 16px;
@@ -309,6 +309,13 @@ section[id]{ scroll-margin-top: 86px; }
 }
 .card-title a:hover{ text-decoration: underline; }
 
+.card-rating{
+  margin-top: 8px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
 .card-desc{
   margin: 10px 0 0;
   color: rgba(255,255,255,0.84);
@@ -419,6 +426,12 @@ section[id]{ scroll-margin-top: 86px; }
   align-items: flex-end;
   gap: 12px;
 }
+.detail-cta{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
 .detail-logo{
   width: 64px;
   height: 64px;
@@ -456,14 +469,31 @@ section[id]{ scroll-margin-top: 86px; }
   gap: 10px;
   color: rgba(255,255,255,0.86);
 }
-.rating-score{
-  font-size: 16px;
-  font-weight: 800;
-}
 .rating-count{
   font-size: 12px;
   letter-spacing: 0.2px;
   color: rgba(255,255,255,0.70);
+}
+.star-bar{
+  position: relative;
+  display:inline-block;
+  width: 88px;
+  height: 14px;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+.star-bar::before{
+  content: "★★★★★";
+  color: rgba(255,255,255,0.22);
+}
+.star-bar::after{
+  content: "★★★★★";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--rating) * 20%);
+  overflow: hidden;
+  color: rgba(255,255,255,0.88);
 }
 
 .detail-body{

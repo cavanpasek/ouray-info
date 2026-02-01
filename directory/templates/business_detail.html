@@ -32,8 +32,8 @@
           {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
           <div class="detail-rating">
             {% if review_count %}
-              <span class="rating-score">{{ avg_rating|floatformat:1 }}</span>
               <span class="rating-count">{{ review_count }} reviews</span>
+              <span class="star-bar" style="--rating: {{ avg_rating|default:0 }};"></span>
             {% else %}
               <span class="rating-count">No reviews yet</span>
             {% endif %}
@@ -44,8 +44,6 @@
       <div class="detail-side">
         {% if b.logo_image %}
           <img class="detail-logo detail-logo--top" src="{{ b.logo_image.url }}" alt="{{ b.name }} logo">
-        {% else %}
-          <div class="detail-logo detail-logo--fallback detail-logo--top">{{ b.name|slice:":1" }}</div>
         {% endif %}
 
         <div class="detail-cta">
