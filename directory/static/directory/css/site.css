@@ -28,7 +28,10 @@
 }
 
 *{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; }
+html{
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
 html, body{ height: 100%; }
 
 body{
@@ -37,6 +40,13 @@ body{
   color: var(--text);
   background: var(--ink);
   overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar{
+  width: 0;
+  height: 0;
 }
 
 .container{
