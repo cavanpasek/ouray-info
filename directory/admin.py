@@ -1,17 +1,25 @@
 from django import forms
 from django.contrib import admin
+from django.core.validators import FileExtensionValidator
 
 from .models import Business
 
+ALLOWED_IMAGE_EXTENSIONS = ["webp", "jpg", "jpeg", "png"]
+
 
 class BusinessAdminForm(forms.ModelForm):
+    hero_image = forms.ImageField(
+        required=False,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)],
+    )
+    logo_image = forms.ImageField(
+        required=False,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)],
+    )
+
     class Meta:
         model = Business
         fields = "__all__"
-        help_texts = {
-            "logo_image": "Upload a square PNG logo for the top-right card spot.",
-            "hero_image": "Upload a wide JPG/PNG hero image for the detail page background.",
-        }
 
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
