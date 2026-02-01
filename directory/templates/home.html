@@ -35,6 +35,15 @@
         <span class="meta-chip">No businesses yet</span>
       {% endif %}
     </div>
+
+    <form class="sort-form" method="get">
+      <label class="sort-label" for="sort">Sort:</label>
+      <select id="sort" name="sort" class="sort-select" onchange="this.form.submit()">
+        <option value="top" {% if sort == "top" %}selected{% endif %}>Top Rated</option>
+        <option value="most" {% if sort == "most" %}selected{% endif %}>Most Reviewed</option>
+        <option value="az" {% if sort == "az" %}selected{% endif %}>A–Z</option>
+      </select>
+    </form>
   </div>
 </section>
 

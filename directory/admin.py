@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.core.validators import FileExtensionValidator
 
-from .models import Business
+from .models import Business, Review
 
 ALLOWED_IMAGE_EXTENSIONS = ["webp", "jpg", "jpeg", "png"]
 
@@ -38,3 +38,10 @@ class BusinessAdmin(admin.ModelAdmin):
         "logo_image",
         "hero_image",
     )
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ("business", "rating", "name", "is_approved", "created_at")
+    list_filter = ("is_approved", "rating", "created_at")
+    search_fields = ("business__name", "name", "email", "comment")

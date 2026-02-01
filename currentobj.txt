@@ -1,18 +1,77 @@
-Small UI consistency update:
+OBJECTIVE: Add an elegant review + bookmarking system to Ouray Info, and automatically sort businesses by reviews.
 
-On the /contact/ page, add the same “Back to home” bubble/button that already exists on the /contact/success/ page.
+ASSUMPTIONS (confirm in code):
+- There is a Business model and a business “details” page (e.g., /business/<slug>/ or similar).
+- There is a business listing page that renders cards for all businesses in a category.
 
-Requirements:
-- Reuse the exact same markup and CSS styles used on the success page (do not restyle or duplicate logic).
-- Place the button below the main contact page text/heading, in a visually consistent position.
-- Link target should be /.
-- Keep the button subtle and elegant (no hover overkill).
-- Do not change form behavior, layout, or hero styling.
-- Minimal changes only.
+FEATURES
 
-Files you may touch:
-- contact.html
-- shared CSS if needed (prefer reuse over duplication)
+A) Reviews (on each business detail page)
+1) Display:
+   - Average rating (1–5) and total review count near the top of the details page.
+   - A short list of recent reviews (e.g., 5–10) with rating, optional name, date, and comment.
+2) Add Review form UNDER the business details:
+   - Fields: rating (1–5), name (optional), comment (required, max length), optional email (optional).
+   - POST submission with CSRF protection.
+   - After successful POST, redirect back to the same business detail page (PRG pattern).
+3) Anti-spam:
+   - Reuse the existing reCAPTCHA v2 backend verification pattern on review submission (no new dependencies).
+   - Fail closed if captcha fails.
+4) Moderation (keep it simple but safe):
+   - Add Review.is_approved boolean default True OR default False with admin approval (choose the simplest “elegant” approach).
+   - Only approved reviews count toward averages and sorting.
+5) Database:
+   - Add a Review model related to Business via FK.
+   - Run migrations (allowed).
 
-After implementing:
-- Confirm the button looks identical on both /contact/ and /contact/success/.
+B) Bookmarks (no user accounts required)
+1) Add a “Bookmark” toggle button on business detail page (and optionally on cards if easy):
+   - If bookmarked: show “Bookmarked” state; if not: “Bookmark”.
+   - No login: store bookmarks in session (server-side) or signed cookie (choose session for simplicity).
+2) Add a /bookmarks/ page:
+   - Shows the user’s bookmarked businesses as cards (same style as other lists).
+   - Allows removing bookmarks.
+3) UX:
+   - Bookmark action should be a POST (or fetch POST) to avoid caching issues; then redirect back (or update via JS if already used elsewhere).
+   - Keep it elegant and consistent with current design language.
+
+C) Automatically sort businesses by reviews
+1) Default sort on listing pages:
+   - Sort businesses primarily by average rating (desc),
+   - Then by review count (desc),
+   - Then by name (asc) as a stable tie-breaker.
+2) Implementation:
+   - Use Django ORM annotations (Avg/Count) filtered to approved reviews.
+   - Avoid N+1 queries; use select_related/prefetch_related where appropriate.
+3) Add a small UI control (optional but nice):
+   - A dropdown on listing pages: “Sort: Top Rated / Most Reviewed / A–Z”
+   - Default to Top Rated.
+
+CONSTRAINTS
+- No new third-party dependencies.
+- Keep design consistent (reuse existing card and hero styles).
+- Keep changes minimal but complete.
+- Use POST-redirect-get for all form submissions.
+- Ask before making major URL/schema changes, but migrations are allowed.
+
+FILES YOU MAY MODIFY/CREATE (expected)
+- directory/models.py (Review model; possibly a helper method on Business)
+- directory/admin.py (register Review; moderation if needed)
+- directory/views.py (detail view: display + submit review; bookmarks view; bookmarks toggle endpoint)
+- directory/urls.py (routes for review post, bookmarks page, bookmark toggle)
+- templates for business detail + bookmarks page
+- site.css (only if needed to style rating stars / buttons elegantly)
+
+DELIVERABLES
+1) First: list the exact files and routes you will add/change.
+2) Implement: Review model + migrations, review form, backend verification, display aggregates.
+3) Implement: Bookmark toggle + bookmarks page.
+4) Implement: Listing-page sorting by reviews with ORM annotations.
+5) Provide: commands to run (migrate, runserver) and manual test checklist.
+
+MANUAL TEST CHECKLIST (must pass)
+- Add review with captcha → appears (or pending approval) and averages update.
+- Review submission without captcha → rejected with clear message.
+- Bookmark a business → shows “Bookmarked” and appears in /bookmarks/.
+- Remove bookmark → disappears from /bookmarks/.
+- Listing pages show businesses ordered by rating/count as specified.

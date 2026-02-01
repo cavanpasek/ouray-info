@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bookmarks | ouray.info{% endblock %}
+{% block body_class %}bookmarks{% endblock %}
+
+{% block content %}
+<section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
+  <div class="band-overlay"></div>
+  <div class="container hero-inner">
+    <h1 class="home-title">Bookmarks</h1>
+    <p class="home-subtitle">Saved businesses for quick access.</p>
+    <div class="home-meta">
+      <a class="btn btn-ghost" href="{% url 'home' %}">Back to home</a>
+    </div>
+  </div>
+</section>
+
+<section class="band band--solid">
+  <div class="container" data-fade="true">
+    {% if businesses %}
+      <div class="card-row" aria-label="Bookmarked businesses">
+        {% for b in businesses %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
+            </div>
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
+              <form method="post" action="{% url 'bookmark_toggle' b.slug %}">
+                {% csrf_token %}
+                <button class="btn btn-ghost" type="submit">Remove</button>
+              </form>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="band-meta">No bookmarks yet.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

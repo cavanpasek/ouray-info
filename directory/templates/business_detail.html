@@ -6,6 +6,7 @@
 
 {% block extra_head %}
   <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
@@ -29,6 +30,14 @@
         <div>
           <h1 class="detail-title">{{ b.name }}</h1>
           {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
+          <div class="detail-rating">
+            {% if review_count %}
+              <span class="rating-score">{{ avg_rating|floatformat:1 }}</span>
+              <span class="rating-count">{{ review_count }} reviews</span>
+            {% else %}
+              <span class="rating-count">No reviews yet</span>
+            {% endif %}
+          </div>
         </div>
       </div>
 
@@ -43,6 +52,12 @@
           {% if b.website %}
             <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
           {% endif %}
+          <form method="post" action="{% url 'bookmark_toggle' b.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-ghost" type="submit">
+              {% if is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
+            </button>
+          </form>
         </div>
       </div>
     </header>
@@ -71,6 +86,66 @@
 
       <div class="detail-actions">
         <a class="btn btn-ghost" href="{% url 'home' %}">Back</a>
+      </div>
+
+      <div class="review-block">
+        <h2 class="review-title">Reviews</h2>
+
+        <div class="review-list">
+          {% for r in reviews %}
+            <article class="review-card">
+              <div class="review-head">
+                <span class="review-stars">{{ r.rating }}/5</span>
+                <span class="review-date">{{ r.created_at|date:"M j, Y" }}</span>
+              </div>
+              {% if r.name %}<div class="review-name">{{ r.name }}</div>{% endif %}
+              <p class="review-comment">{{ r.comment }}</p>
+            </article>
+          {% empty %}
+            <p class="detail-desc detail-desc--muted">No reviews yet.</p>
+          {% endfor %}
+        </div>
+
+        <div class="review-form-wrap">
+          <h3 class="review-subtitle">Add a review</h3>
+          {% if review_error %}
+            <p class="band-meta">{{ review_error }}</p>
+          {% endif %}
+          <form method="post" class="card contact-form" action="{% url 'review_submit' b.slug %}">
+            {% csrf_token %}
+            <div class="detail-meta-grid">
+              <label class="meta-row">
+                <span class="meta-label">Rating</span>
+                <select class="meta-value" name="rating" required>
+                  <option value="">Select…</option>
+                  {% for v in "12345" %}
+                    <option value="{{ v }}" {% if review_form.rating == v %}selected{% endif %}>{{ v }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label class="meta-row">
+                <span class="meta-label">Name (optional)</span>
+                <input class="meta-value" type="text" name="name" value="{{ review_form.name|default_if_none:'' }}">
+              </label>
+              <label class="meta-row">
+                <span class="meta-label">Email (optional)</span>
+                <input class="meta-value" type="email" name="email" value="{{ review_form.email|default_if_none:'' }}">
+              </label>
+              <label class="meta-row">
+                <span class="meta-label">Comment</span>
+                <textarea class="meta-value" name="comment" rows="4" maxlength="1000" required>{{ review_form.comment|default_if_none:'' }}</textarea>
+              </label>
+            </div>
+
+            <div style="margin-top: 16px;">
+              <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+            </div>
+
+            <div class="detail-actions" style="margin-top: 16px;">
+              <button class="btn" type="submit">Submit review</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
