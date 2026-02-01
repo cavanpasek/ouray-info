@@ -22,7 +22,8 @@
       <p class="band-meta">{{ success }}</p>
     {% endif %}
 
-    <form method="post" class="card" action="{% url 'contact' %}">
+    <!-- DEBUG site_key={{ site_key }} -->
+    <form method="post" class="card contact-form" action="{% url 'contact' %}">
       {% csrf_token %}
       <div class="detail-meta-grid">
         <label class="meta-row">
