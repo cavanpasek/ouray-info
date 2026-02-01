@@ -1,37 +1,18 @@
-OBJECTIVE: Improve contact page UX and site navigation with elegant, minimal changes.
+Small UI consistency update:
 
-TASK A — Top navigation link
-- Add a "Contact" link to the top navigation row on the home page.
-- The nav currently contains: Coffee, Restaurants, Shopping, Other.
-- Place the "Contact" link on the FAR RIGHT of the row.
-- Style it consistently with the existing nav (text-only, no buttons).
-- Link target must be /contact/.
-- Do not restructure or refactor the nav; minimal template/CSS changes only.
+On the /contact/ page, add the same “Back to home” bubble/button that already exists on the /contact/success/ page.
 
-TASK B — Contact page hero background
-- Update the /contact/ page so its background/hero matches the home page hero.
-- Use the same image: abrams-image.jpg.
-- Match existing hero overlay, blur, gradients, and typography so the page feels cohesive with the homepage.
-- Do not duplicate large blocks of CSS; reuse existing hero styles where possible.
+Requirements:
+- Reuse the exact same markup and CSS styles used on the success page (do not restyle or duplicate logic).
+- Place the button below the main contact page text/heading, in a visually consistent position.
+- Link target should be /.
+- Keep the button subtle and elegant (no hover overkill).
+- Do not change form behavior, layout, or hero styling.
+- Minimal changes only.
 
-TASK C — Post-submit success page
-- After a successful contact form submission, redirect the user to a new success page (e.g. /contact/success/ or equivalent).
-- This page should:
-  - Retain the same hero background (abrams-image.jpg).
-  - Display a clear, elegant message: “Thanks! Your message has been received.”
-  - Include a visually subtle but obvious link back to the home page.
-- The page should feel calm, clean, and intentional (no alert boxes).
-- Do not re-submit the form on refresh (use redirect-after-POST).
+Files you may touch:
+- contact.html
+- shared CSS if needed (prefer reuse over duplication)
 
-CONSTRAINTS:
-- Do NOT add new dependencies.
-- Do NOT change database models or migrations.
-- Keep all changes minimal and localized.
-- Ask before touching files outside the expected templates, views, urls, or CSS.
-- Prioritize reuse of existing styles and structure.
-
-DELIVERABLES:
-- List the exact files you will modify or create before implementing.
-- Implement all changes.
-- Briefly explain how the redirect-after-submit flow works.
-- Tell me what URLs I should test in the browser.
+After implementing:
+- Confirm the button looks identical on both /contact/ and /contact/success/.
