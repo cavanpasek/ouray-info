@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact | ouray.info{% endblock %}
+{% block body_class %}contact{% endblock %}
+
+{% block content %}
+<section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
+  <div class="band-overlay"></div>
+  <div class="container hero-inner">
+    <h1 class="home-title">Thanks!</h1>
+    <p class="home-subtitle">Your message has been received.</p>
+    <div class="home-meta">
+      <a class="btn btn-ghost" href="{% url 'home' %}">Back to home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

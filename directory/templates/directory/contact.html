@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Contact | ouray.info{% endblock %}
 {% block body_class %}contact{% endblock %}
@@ -8,18 +9,18 @@
 {% endblock %}
 
 {% block content %}
-<section class="band band--solid">
-  <div class="container band-head">
-    <h1 class="band-title">Contact</h1>
-    <p class="band-meta">Send a message to ouray.info.</p>
+<section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
+  <div class="band-overlay"></div>
+  <div class="container hero-inner">
+    <h1 class="home-title">Contact</h1>
+    <p class="home-subtitle">Send a message to ouray.info.</p>
   </div>
+</section>
 
+<section class="band band--solid">
   <div class="container">
     {% if error %}
       <p class="band-meta">{{ error }}</p>
-    {% endif %}
-    {% if success %}
-      <p class="band-meta">{{ success }}</p>
     {% endif %}
 
     <!-- DEBUG site_key={{ site_key }} -->

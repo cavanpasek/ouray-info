@@ -5,7 +5,7 @@ import urllib.request
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Business
 
 def home(request):
@@ -83,7 +83,10 @@ def contact(request):
             context["error"] = "Email sending failed. Please try again."
             return render(request, "directory/contact.html", context)
 
-        context["success"] = "Thanks! Your message has been received."
-        return render(request, "directory/contact.html", context)
+        return redirect("contact_success")
 
     return render(request, "directory/contact.html", context)
+
+
+def contact_success(request):
+    return render(request, "directory/contact_success.html")

@@ -1,35 +1,37 @@
-Add email delivery for the contact form submissions.
+OBJECTIVE: Improve contact page UX and site navigation with elegant, minimal changes.
 
-Goal:
-- When a contact form submission passes reCAPTCHA verification, send the message via email.
+TASK A — Top navigation link
+- Add a "Contact" link to the top navigation row on the home page.
+- The nav currently contains: Coffee, Restaurants, Shopping, Other.
+- Place the "Contact" link on the FAR RIGHT of the row.
+- Style it consistently with the existing nav (text-only, no buttons).
+- Link target must be /contact/.
+- Do not restructure or refactor the nav; minimal template/CSS changes only.
 
-Recipients:
-- cavanpasek@gmail.com
-- keatonn@ourayschool.org
-- oliverc@ourayschool.org
+TASK B — Contact page hero background
+- Update the /contact/ page so its background/hero matches the home page hero.
+- Use the same image: abrams-image.jpg.
+- Match existing hero overlay, blur, gradients, and typography so the page feels cohesive with the homepage.
+- Do not duplicate large blocks of CSS; reuse existing hero styles where possible.
 
-Requirements:
-- Do NOT add new Python dependencies.
-- Use Django’s built-in email utilities (django.core.mail).
-- Do NOT store messages in the database.
-- Do NOT expose email addresses in templates.
-- Keep changes minimal and localized.
+TASK C — Post-submit success page
+- After a successful contact form submission, redirect the user to a new success page (e.g. /contact/success/ or equivalent).
+- This page should:
+  - Retain the same hero background (abrams-image.jpg).
+  - Display a clear, elegant message: “Thanks! Your message has been received.”
+  - Include a visually subtle but obvious link back to the home page.
+- The page should feel calm, clean, and intentional (no alert boxes).
+- Do not re-submit the form on refresh (use redirect-after-POST).
 
-Implementation details:
-- Configure email settings using environment variables only (no hardcoded credentials).
-- Use a reasonable subject line like: "New Ouray Info Contact Form Submission".
-- Email body should include:
-  - Name
-  - Email
-  - Message
-- Only send the email after reCAPTCHA verification succeeds.
-- If email sending fails, show a user-visible error and do not silently discard the message.
+CONSTRAINTS:
+- Do NOT add new dependencies.
+- Do NOT change database models or migrations.
+- Keep all changes minimal and localized.
+- Ask before touching files outside the expected templates, views, urls, or CSS.
+- Prioritize reuse of existing styles and structure.
 
-Files you may modify:
-- config/settings.py (email configuration via env vars only)
-- directory/views.py (send email on successful submission)
-
-After implementation:
-- List the exact files changed.
-- Tell me which environment variables I need to set locally and on Render.
-- Tell me how to verify the email sending works.
+DELIVERABLES:
+- List the exact files you will modify or create before implementing.
+- Implement all changes.
+- Briefly explain how the redirect-after-submit flow works.
+- Tell me what URLs I should test in the browser.
