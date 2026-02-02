@@ -32,9 +32,17 @@ def _rating_to_percent(rating):
     return round(rounded * 100, 2)
 
 
-def _get_google_place(place_id):
+def get_google_place_data(place_id):
+    defaults = {
+        "google_rating": None,
+        "google_count": None,
+        "google_reviews": [],
+        "google_url": None,
+        "google_error": None,
+    }
+
     if not place_id or not settings.GOOGLE_MAPS_API_KEY:
-        return None
+        return defaults
 
     now = time.time()
     cached = _google_cache.get(place_id)
@@ -51,14 +59,33 @@ def _get_google_place(place_id):
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=8) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.URLError, ValueError):
-        return None
+    except urllib.error.HTTPError as exc:
+        if settings.DEBUG:
+            print(f"[google] place_id={place_id} http_status={exc.code} error=HTTPError")
+        defaults["google_error"] = "http_error"
+        return defaults
+    except urllib.error.URLError as exc:
+        if settings.DEBUG:
+            print(f"[google] place_id={place_id} http_status=none error=URLError")
+        defaults["google_error"] = "url_error"
+        return defaults
+    except json.JSONDecodeError:
+        if settings.DEBUG:
+            print(f"[google] place_id={place_id} http_status=none error=JSONDecodeError")
+        defaults["google_error"] = "json_error"
+        return defaults
+    except Exception:
+        if settings.DEBUG:
+            print(f"[google] place_id={place_id} http_status=none error=Exception")
+        defaults["google_error"] = "unknown_error"
+        return defaults
 
     data = {
-        "rating": payload.get("rating"),
-        "user_rating_count": payload.get("userRatingCount"),
-        "google_maps_uri": payload.get("googleMapsUri"),
-        "reviews": [],
+        "google_rating": payload.get("rating"),
+        "google_count": payload.get("userRatingCount"),
+        "google_reviews": [],
+        "google_url": payload.get("googleMapsUri"),
+        "google_error": None,
     }
 
     for review in payload.get("reviews", []) or []:
@@ -68,7 +95,7 @@ def _get_google_place(place_id):
         else:
             text_value = text_payload
 
-        data["reviews"].append(
+        data["google_reviews"].append(
             {
                 "rating": review.get("rating"),
                 "author": (review.get("authorAttribution") or {}).get("displayName"),
@@ -90,12 +117,12 @@ def _attach_google_summaries(businesses):
         b.google_fill_percent = None
         b.google_maps_uri = None
         if b.google_place_id:
-            google = _get_google_place(b.google_place_id)
-            if google and google.get("rating") is not None:
-                b.google_rating = google.get("rating")
-                b.google_user_count = google.get("user_rating_count") or 0
+            google = get_google_place_data(b.google_place_id)
+            if google.get("google_rating") is not None:
+                b.google_rating = google.get("google_rating")
+                b.google_user_count = google.get("google_count") or 0
                 b.google_fill_percent = _rating_to_percent(b.google_rating)
-                b.google_maps_uri = google.get("google_maps_uri")
+                b.google_maps_uri = google.get("google_url")
 
 
 def _get_bookmark_ids(request):
@@ -167,8 +194,8 @@ def business_detail(request, slug):
     review_count = stats["count"] or 0
     reviews = list(approved_reviews)
     is_bookmarked = b.id in _get_bookmark_ids(request)
-    google = _get_google_place(b.google_place_id) if b.google_place_id else None
-    google_reviews = (google or {}).get("reviews") or []
+    google = get_google_place_data(b.google_place_id)
+    google_reviews = google.get("google_reviews", [])
 
     combined_reviews = []
     for review in google_reviews:
@@ -196,10 +223,10 @@ def business_detail(request, slug):
         )
 
     ouray_fill_percent = _rating_to_percent(avg_rating)
-    google_rating = (google or {}).get("rating")
-    google_user_count = (google or {}).get("user_rating_count") or 0
+    google_rating = google.get("google_rating")
+    google_user_count = google.get("google_count") or 0
     google_fill_percent = _rating_to_percent(google_rating)
-    google_maps_uri = (google or {}).get("google_maps_uri")
+    google_maps_uri = google.get("google_url")
 
     context = {
         "b": b,
@@ -235,8 +262,8 @@ def review_submit(request, slug):
     review_count = stats["count"] or 0
     reviews = list(approved_reviews)
     is_bookmarked = b.id in _get_bookmark_ids(request)
-    google = _get_google_place(b.google_place_id) if b.google_place_id else None
-    google_reviews = (google or {}).get("reviews") or []
+    google = get_google_place_data(b.google_place_id)
+    google_reviews = google.get("google_reviews", [])
 
     combined_reviews = []
     for review in google_reviews:
@@ -264,10 +291,10 @@ def review_submit(request, slug):
         )
 
     ouray_fill_percent = _rating_to_percent(avg_rating)
-    google_rating = (google or {}).get("rating")
-    google_user_count = (google or {}).get("user_rating_count") or 0
+    google_rating = google.get("google_rating")
+    google_user_count = google.get("google_count") or 0
     google_fill_percent = _rating_to_percent(google_rating)
-    google_maps_uri = (google or {}).get("google_maps_uri")
+    google_maps_uri = google.get("google_url")
 
     context = {
         "b": b,
