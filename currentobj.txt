@@ -1,0 +1,45 @@
+OBJECTIVE: Add a single “Deals” pill row on the business detail page and enable admins to manage deals in the backend. Keep changes minimal and safe.
+
+SCOPE (DO ONLY THIS)
+1) Business detail page UI:
+- On the business details page where the pill rows currently show:
+  Address
+  Phone
+  Website
+- Add ONE additional pill row directly below “Website” labeled:
+  Deals
+- The “Deals” pill should match the exact styling/layout of the existing pill rows.
+
+Behavior:
+- If the business has an active deal, display a short deal string on the right side of the “Deals” row.
+  - Show: deal title (preferred) OR deal code if title is blank.
+  - Keep it one line; truncate with ellipsis if long.
+- If the business has no active deal, display “None” (or leave blank if that looks more elegant—choose the cleaner option, but do not crash).
+
+2) Admin/back-end:
+- Allow admins to add/edit deals for a business from the Django admin.
+- Minimal backend is fine:
+  Option A (simplest): Add fields directly on Business:
+    - deal_title (CharField blank=True)
+    - deal_details (TextField blank=True) [optional, can skip if not needed]
+    - deal_code (CharField blank=True) [optional]
+    - deal_expires_at (DateTimeField null=True blank=True) [optional]
+    - deal_is_active (BooleanField default=True)
+    - Active deal if deal_is_active and (deal_expires_at is null or deal_expires_at > now) and deal_title not empty
+  Option B (still simple, preferred if already have/expect multiple deals): Create Deal model with FK to Business and admin inline, but ONLY if it stays minimal.
+- Choose the approach that requires the least code and least UI work while meeting the requirement “allow admin page to add deals”.
+
+Constraints:
+- No new dependencies.
+- Keep changes limited to the business detail view/template, models/admin, and minimal CSS only if necessary.
+- Do NOT change any other pages (no /deals page, no cards badges, no sorting changes).
+
+Deliverables:
+- List the exact files you will modify before implementing.
+- Implement the deal backend + admin editability.
+- Implement the “Deals” pill row on the detail page.
+- Add/run migrations if you add model fields or a new model.
+- Provide a quick test checklist:
+  - Add deal in admin → appears in Deals row
+  - Expired/inactive deal does not appear (if expiration implemented)
+  - Business with no deal does not crash

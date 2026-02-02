@@ -99,6 +99,16 @@
             <span class="meta-value"><a href="{{ b.website }}" target="_blank" rel="noopener">{{ b.website }}</a></span>
           </div>
         {% endif %}
+        <div class="meta-row">
+          <span class="meta-label">Deals</span>
+          <span class="meta-value">
+            {% if active_deal %}
+              {{ active_deal.title|default:active_deal.code|truncatechars:40 }}
+            {% else %}
+              None
+            {% endif %}
+          </span>
+        </div>
       </div>
 
       <div class="detail-actions">
