@@ -224,9 +224,7 @@ def home(request):
 
     _attach_google_summaries(businesses)
 
-    if sort == "most":
-        businesses.sort(key=lambda b: (-b.review_count, -(b.avg_rating or 0), b.name))
-    elif sort == "az":
+    if sort == "az":
         businesses.sort(key=lambda b: (b.name,))
     elif sort == "google":
         businesses.sort(

@@ -33,23 +33,26 @@
           <div class="detail-rating">
             {% if review_count %}
               <div class="rating-row">
-                <span class="rating-label">Ouray.info</span>
-                <span class="rating-count">{{ review_count }} reviews</span>
+                <span class="rating-label">ouray.info:</span>
                 <span class="star-bar" style="--fill-percent: {{ ouray_fill_percent }}%;"></span>
-                <span class="rating-score">{{ avg_rating|floatformat:2 }}</span>
+                <span class="rating-score">{{ avg_rating|floatformat:1 }}</span>
+                <span class="rating-dot">·</span>
+                <span class="rating-count">{{ review_count }} reviews</span>
               </div>
             {% else %}
               <div class="rating-row">
-                <span class="rating-count">No reviews yet</span>
+                <span class="rating-label">ouray.info:</span>
+                <span class="rating-count">No ouray.info reviews yet</span>
               </div>
             {% endif %}
 
             {% if google_rating %}
               <div class="rating-row">
-                <span class="rating-label">Google</span>
-                <span class="rating-count">{{ google_user_count }} reviews</span>
+                <span class="rating-label">Google:</span>
                 <span class="star-bar" style="--fill-percent: {{ google_fill_percent }}%;"></span>
-                <span class="rating-score">{{ google_rating|floatformat:2 }}</span>
+                <span class="rating-score">{{ google_rating|floatformat:1 }}</span>
+                <span class="rating-dot">·</span>
+                <span class="rating-count">{{ google_user_count }} reviews</span>
                 {% if google_maps_uri %}
                   <a class="rating-link" href="{{ google_maps_uri }}" target="_blank" rel="noopener">Read on Google</a>
                 {% endif %}

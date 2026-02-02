@@ -82,6 +82,8 @@ body::-webkit-scrollbar{
   gap: 18px;
   padding: 14px 0;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
 }
 
 .topnav-link{
@@ -237,6 +239,18 @@ section[id]{ scroll-margin-top: 86px; }
 /* Snowy “Other” headings use dark text for contrast */
 .band-head--snow .band-title{ color: var(--snow-text); text-shadow: none; }
 .band-head--snow .band-meta{ color: var(--snow-muted); text-shadow: none; }
+.band-head--attractions .band-title,
+.band-head--attractions .band-meta{
+  color: var(--accent);
+  text-shadow: none;
+}
+
+.explore-links{
+  display:flex;
+  flex-wrap: wrap;
+  justify-content:center;
+  gap: 10px;
+}
 
 /* Horizontal scroll row */
 .card-row{
@@ -496,6 +510,10 @@ section[id]{ scroll-margin-top: 86px; }
   font-size: 12px;
   font-weight: 700;
   color: rgba(255,255,255,0.80);
+}
+.rating-dot{
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
 }
 .rating-link{
   font-size: 12px;

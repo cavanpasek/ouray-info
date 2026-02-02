@@ -14,10 +14,7 @@
 
 <nav class="topnav" aria-label="Categories">
   <div class="container topnav-inner">
-    <a class="topnav-link" href="#coffee">Coffee</a>
-    <a class="topnav-link" href="#restaurants">Restaurants</a>
-    <a class="topnav-link" href="#shopping">Shopping</a>
-    <a class="topnav-link" href="#other">Other</a>
+    <a class="topnav-link" href="#explore">Explore</a>
     <a class="topnav-link" href="/contact/">Contact</a>
     <a class="topnav-link" href="/bookmarks/">Bookmarked</a>
   </div>
@@ -32,12 +29,25 @@
     <form class="sort-form" method="get">
       <label class="sort-label" for="sort">Sort:</label>
       <select id="sort" name="sort" class="sort-select" onchange="this.form.submit()">
-        <option value="top" {% if sort == "top" %}selected{% endif %}>Top Rated (Ouray)</option>
+        <option value="top" {% if sort == "top" %}selected{% endif %}>Top Rated (ouray.info)</option>
         <option value="google" {% if sort == "google" %}selected{% endif %}>Top Rated (Google)</option>
-        <option value="most" {% if sort == "most" %}selected{% endif %}>Most Reviewed (Ouray)</option>
         <option value="az" {% if sort == "az" %}selected{% endif %}>A–Z</option>
       </select>
     </form>
+  </div>
+</section>
+
+<section id="explore" class="band band--solid band--explore">
+  <div class="container band-head">
+    <h2 class="band-title">Explore</h2>
+    <p class="band-meta">Jump to a category.</p>
+  </div>
+  <div class="container explore-links">
+    <a class="pill" href="#coffee">Coffee</a>
+    <a class="pill" href="#restaurants">Restaurants</a>
+    <a class="pill" href="#shopping">Shopping</a>
+    <a class="pill" href="#attractions">Attractions</a>
+    <a class="pill" href="#other">Other</a>
   </div>
 </section>
 
@@ -61,7 +71,7 @@
                 <span class="rating-count">{{ b.review_count }} reviews</span>
                 <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
               {% else %}
-                <span class="rating-count">No reviews yet</span>
+                <span class="rating-count">No ouray.info reviews yet</span>
               {% endif %}
             </div>
             {% if b.google_rating %}
@@ -105,7 +115,7 @@
                 <span class="rating-count">{{ b.review_count }} reviews</span>
                 <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
               {% else %}
-                <span class="rating-count">No reviews yet</span>
+                <span class="rating-count">No ouray.info reviews yet</span>
               {% endif %}
             </div>
             {% if b.google_rating %}
@@ -147,7 +157,7 @@
                 <span class="rating-count">{{ b.review_count }} reviews</span>
                 <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
               {% else %}
-                <span class="rating-count">No reviews yet</span>
+                <span class="rating-count">No ouray.info reviews yet</span>
               {% endif %}
             </div>
             {% if b.google_rating %}
@@ -169,11 +179,53 @@
   </div>
 </section>
 
-<!-- Snowy image band: use dark text mode for contrast -->
-<section id="other" class="band band--image band--snow" style="--band-image: url('{% static "directory/img/ouray-winter.jpg" %}');">
+<!-- Snowy image band: Attractions -->
+<section id="attractions" class="band band--image band--snow" style="--band-image: url('{% static "directory/img/ouray-winter.jpg" %}');">
   <div class="band-overlay band-overlay--snow"></div>
 
-  <div class="container band-head band-head--snow">
+  <div class="container band-head band-head--snow band-head--attractions">
+    <h2 class="band-title">Attractions</h2>
+    <p class="band-meta">Trails, sights, experiences, and local gems.</p>
+  </div>
+
+  <div class="container" data-fade="true">
+    <div class="card-row" aria-label="Attractions businesses">
+      {% for b in businesses %}
+        {% if b.category and b.category|lower == "attractions" %}
+          <article class="card">
+            <div class="card-top">
+              <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
+              <span class="pill">{{ b.category }}</span>
+            </div>
+            <div class="card-rating">
+              {% if b.review_count %}
+                <span class="rating-count">{{ b.review_count }} reviews</span>
+                <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
+              {% else %}
+                <span class="rating-count">No ouray.info reviews yet</span>
+              {% endif %}
+            </div>
+            {% if b.google_rating %}
+              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+            {% endif %}
+            {% if b.description %}
+              <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
+            {% else %}
+              <p class="card-desc card-desc--muted">No description yet.</p>
+            {% endif %}
+            <div class="card-actions">
+              <a class="btn btn-ghost" href="{% url 'business_detail' b.slug %}">Details</a>
+              {% if b.website %}<a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="other" class="band band--solid band--other">
+  <div class="container band-head">
     <h2 class="band-title">Other</h2>
     <p class="band-meta">Everything not yet categorized.</p>
   </div>
@@ -181,22 +233,22 @@
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Other businesses">
       {% for b in businesses %}
-        {% if not b.category or b.category|lower not in "coffee restaurants shopping" %}
-          <article class="card card--snow">
+        {% if not b.category or b.category|lower not in "coffee restaurants shopping attractions" %}
+          <article class="card">
             <div class="card-top">
               <h3 class="card-title"><a href="{% url 'business_detail' b.slug %}">{{ b.name }}</a></h3>
-              {% if b.category %}<span class="pill pill--snow">{{ b.category }}</span>{% endif %}
+              {% if b.category %}<span class="pill">{{ b.category }}</span>{% endif %}
             </div>
             <div class="card-rating">
               {% if b.review_count %}
                 <span class="rating-count">{{ b.review_count }} reviews</span>
                 <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
               {% else %}
-                <span class="rating-count">No reviews yet</span>
+                <span class="rating-count">No ouray.info reviews yet</span>
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google â˜… {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
