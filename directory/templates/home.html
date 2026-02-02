@@ -54,8 +54,7 @@
             </div>
             <div class="card-rating">
               {% if b.review_count %}
-                <span class="rating-count">ouray.info * {{ b.avg_rating|floatformat:1 }} ({{ b.review_count }})</span>
-                <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
+                <span class="rating-count">ouray.info &#9733; {{ b.avg_rating|floatformat:1 }} ({{ b.review_count }})</span>
               {% else %}
                 <span class="rating-count">No ouray.info reviews yet</span>
               {% endif %}
