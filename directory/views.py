@@ -42,7 +42,15 @@ def get_google_place_data(place_id):
     }
 
     if not place_id or not settings.GOOGLE_MAPS_API_KEY:
+        if place_id:
+            print(
+                f"[google] called place_id={place_id} key_present={str(bool(settings.GOOGLE_MAPS_API_KEY)).lower()}"
+            )
         return defaults
+
+    print(
+        f"[google] called place_id={place_id} key_present={str(bool(settings.GOOGLE_MAPS_API_KEY)).lower()}"
+    )
 
     now = time.time()
     cached = _google_cache.get(place_id)
