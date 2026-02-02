@@ -72,9 +72,38 @@ def get_google_place_data(place_id):
     except urllib.error.HTTPError as exc:
         if settings.DEBUG:
             print(f"[google] place_id={place_id} http_status={exc.code} error=HTTPError")
+        body = ""
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+
+        status_label = ""
+        message_label = ""
+        try:
+            payload = json.loads(body) if body else {}
+            if isinstance(payload, dict):
+                if "error" in payload and isinstance(payload["error"], dict):
+                    status_label = payload["error"].get("status", "") or ""
+                    message_label = payload["error"].get("message", "") or ""
+                else:
+                    status_label = payload.get("status", "") or ""
+                    message_label = payload.get("error_message", "") or ""
+        except json.JSONDecodeError:
+            payload = {}
+
+        label_parts = []
+        if status_label:
+            label_parts.append(status_label)
+        if message_label:
+            label_parts.append(message_label)
+        label = ": ".join(label_parts) if label_parts else "HTTPError"
+        if len(label) > 140:
+            label = label[:137] + "..."
+
         defaults["google_error"] = "http_error"
         defaults["google_http_status"] = exc.code
-        defaults["google_error_label"] = "HTTPError"
+        defaults["google_error_label"] = label
         return defaults
     except urllib.error.URLError as exc:
         if settings.DEBUG:
