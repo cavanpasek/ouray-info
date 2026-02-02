@@ -10,6 +10,7 @@ class Business(models.Model):
     description = models.TextField(blank=True)
     website = models.URLField(blank=True)
     phone = models.CharField(max_length=50, blank=True)
+    deal_text = models.CharField(max_length=200, blank=True)
     address = models.CharField(max_length=300, blank=True)
     hero_image = models.ImageField(upload_to="business_hero/", blank=True, null=True)
     logo_image = models.ImageField(upload_to="business_logos/", blank=True, null=True)

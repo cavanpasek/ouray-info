@@ -102,8 +102,8 @@
         <div class="meta-row">
           <span class="meta-label">Deals</span>
           <span class="meta-value">
-            {% if active_deal %}
-              {{ active_deal.title|default:active_deal.code|truncatechars:40 }}
+            {% if b.deal_text %}
+              {{ b.deal_text|truncatechars:80 }}
             {% else %}
               None
             {% endif %}

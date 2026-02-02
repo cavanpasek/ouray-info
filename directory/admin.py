@@ -34,6 +34,7 @@ class BusinessAdmin(admin.ModelAdmin):
         "description",
         "website",
         "phone",
+        "deal_text",
         "address",
         "logo_image",
         "hero_image",
