@@ -59,14 +59,16 @@ def get_google_place_data(place_id):
     if cached and (now - cached["ts"] < GOOGLE_CACHE_TTL):
         return cached["data"]
 
-    url = f"https://places.googleapis.com/v1/places/{place_id}"
-    headers = {
-        "X-Goog-Api-Key": settings.GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask": "rating,userRatingCount,reviews,googleMapsUri",
-    }
-
     try:
-        req = urllib.request.Request(url, headers=headers)
+        query = urllib.parse.urlencode(
+            {
+                "place_id": place_id,
+                "fields": "rating,user_ratings_total,reviews,url,name",
+                "key": settings.GOOGLE_MAPS_API_KEY,
+            }
+        )
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?{query}"
+        req = urllib.request.Request(url)
         with urllib.request.urlopen(req, timeout=8) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -127,17 +129,30 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = "Exception"
         return defaults
 
+    status_text = payload.get("status")
+    if status_text and status_text != "OK":
+        message = payload.get("error_message", "")
+        label = f"{status_text}: {message}".strip(": ")
+        if len(label) > 140:
+            label = label[:137] + "..."
+        defaults["google_error"] = "api_error"
+        defaults["google_http_status"] = 200
+        defaults["google_error_label"] = label or status_text
+        return defaults
+
+    result = payload.get("result") or {}
+
     data = {
-        "google_rating": payload.get("rating"),
-        "google_count": payload.get("userRatingCount"),
+        "google_rating": result.get("rating"),
+        "google_count": result.get("user_ratings_total"),
         "google_reviews": [],
-        "google_url": payload.get("googleMapsUri"),
+        "google_url": result.get("url"),
         "google_error": None,
         "google_http_status": 200,
         "google_error_label": "",
     }
 
-    for review in payload.get("reviews", []) or []:
+    for review in result.get("reviews", []) or []:
         text_payload = review.get("text")
         if isinstance(text_payload, dict):
             text_value = text_payload.get("text")
