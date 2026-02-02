@@ -1,30 +1,6 @@
-OBJECTIVE: Add a single “Deals” pill row on the business detail page and enable admins to add text for the pill, similar to how admins can add a phone number or website through ouray.info/admin. Keep changes minimal and safe.
+OBJECTIVE: Change business card's "2 Reviews *****" format for ouray.info reviews to "ouray.info * [numerica rating (1-5 scale)] ([number of total ouray.info reviews])"
 
 SCOPE (DO ONLY THIS)
-1) Business detail page UI:
-- On the business details page where the pill rows currently show:
-  Address
-  Phone
-  Website
-  Deals
-
-Current Behavior:
-- If the business has a deal, display a short deal string on the right side of the “Deals” row.
-- If the business has no deal, display “None” (or leave blank if that looks more elegant—choose the cleaner option, but do not crash).
-
-2) Admin/back-end:
-- Allow admins to add/edit deals for a business from the Django admin.
-- Minimal backend is optimal, similar to how website and phone are setup:
-
-Constraints:
-- No new dependencies.
-- Keep changes limited to the business detail view/template, models/admin, and minimal CSS only if necessary.
-- Do NOT change any other pages (no /deals page, no cards badges, no sorting changes).
 
 Deliverables:
 - List the exact files you will modify before implementing.
-- Implement the deal backend + admin editability.
-- Add/run migrations if you add model fields or a new model.
-- Provide a quick test checklist:
-  - Add deal in admin → appears in Deals row
-  - Business with no deal does not crash
