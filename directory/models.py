@@ -13,6 +13,7 @@ class Business(models.Model):
     address = models.CharField(max_length=300, blank=True)
     hero_image = models.ImageField(upload_to="business_hero/", blank=True, null=True)
     logo_image = models.ImageField(upload_to="business_logos/", blank=True, null=True)
+    google_place_id = models.CharField(max_length=200, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

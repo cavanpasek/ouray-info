@@ -1,4 +1,5 @@
 import json
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -11,6 +12,9 @@ from django.db.models.functions import Coalesce
 
 from .models import Business, Review
 
+GOOGLE_CACHE_TTL = 300
+_google_cache = {}
+
 def _annotate_reviews(queryset):
     return queryset.annotate(
         avg_rating=Coalesce(
@@ -18,6 +22,80 @@ def _annotate_reviews(queryset):
         ),
         review_count=Count("reviews", filter=Q(reviews__is_approved=True)),
     )
+
+
+def _rating_to_percent(rating):
+    if not rating:
+        return 0
+    fill = float(rating) / 5
+    rounded = round(fill / 0.05) * 0.05
+    return round(rounded * 100, 2)
+
+
+def _get_google_place(place_id):
+    if not place_id or not settings.GOOGLE_MAPS_API_KEY:
+        return None
+
+    now = time.time()
+    cached = _google_cache.get(place_id)
+    if cached and (now - cached["ts"] < GOOGLE_CACHE_TTL):
+        return cached["data"]
+
+    url = f"https://places.googleapis.com/v1/places/{place_id}"
+    headers = {
+        "X-Goog-Api-Key": settings.GOOGLE_MAPS_API_KEY,
+        "X-Goog-FieldMask": "rating,userRatingCount,reviews,googleMapsUri",
+    }
+
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.URLError, ValueError):
+        return None
+
+    data = {
+        "rating": payload.get("rating"),
+        "user_rating_count": payload.get("userRatingCount"),
+        "google_maps_uri": payload.get("googleMapsUri"),
+        "reviews": [],
+    }
+
+    for review in payload.get("reviews", []) or []:
+        text_payload = review.get("text")
+        if isinstance(text_payload, dict):
+            text_value = text_payload.get("text")
+        else:
+            text_value = text_payload
+
+        data["reviews"].append(
+            {
+                "rating": review.get("rating"),
+                "author": (review.get("authorAttribution") or {}).get("displayName"),
+                "relative_time": review.get("relativePublishTimeDescription"),
+                "text": text_value,
+                "google_maps_uri": review.get("googleMapsUri"),
+            }
+        )
+
+    _google_cache[place_id] = {"ts": now, "data": data}
+    return data
+
+
+def _attach_google_summaries(businesses):
+    for b in businesses:
+        b.ouray_fill_percent = _rating_to_percent(getattr(b, "avg_rating", 0))
+        b.google_rating = None
+        b.google_user_count = None
+        b.google_fill_percent = None
+        b.google_maps_uri = None
+        if b.google_place_id:
+            google = _get_google_place(b.google_place_id)
+            if google and google.get("rating") is not None:
+                b.google_rating = google.get("rating")
+                b.google_user_count = google.get("user_rating_count") or 0
+                b.google_fill_percent = _rating_to_percent(b.google_rating)
+                b.google_maps_uri = google.get("google_maps_uri")
 
 
 def _get_bookmark_ids(request):
@@ -59,15 +137,25 @@ def _verify_recaptcha(request, recaptcha_response):
 
 def home(request):
     sort = request.GET.get("sort", "top")
-    businesses = _annotate_reviews(Business.objects.all())
+    businesses = list(_annotate_reviews(Business.objects.all()))
+
+    _attach_google_summaries(businesses)
 
     if sort == "most":
-        businesses = businesses.order_by("-review_count", "-avg_rating", "name")
+        businesses.sort(key=lambda b: (-b.review_count, -(b.avg_rating or 0), b.name))
     elif sort == "az":
-        businesses = businesses.order_by("name")
+        businesses.sort(key=lambda b: (b.name,))
+    elif sort == "google":
+        businesses.sort(
+            key=lambda b: (
+                -(b.google_rating or 0),
+                -(b.google_user_count or 0),
+                b.name,
+            )
+        )
     else:
         sort = "top"
-        businesses = businesses.order_by("-avg_rating", "-review_count", "name")
+        businesses.sort(key=lambda b: (-(b.avg_rating or 0), -b.review_count, b.name))
 
     return render(request, "home.html", {"businesses": businesses, "sort": sort})
 
@@ -77,17 +165,55 @@ def business_detail(request, slug):
     stats = approved_reviews.aggregate(avg=Avg("rating"), count=Count("id"))
     avg_rating = stats["avg"] or 0
     review_count = stats["count"] or 0
-    reviews = approved_reviews[:8]
+    reviews = list(approved_reviews)
     is_bookmarked = b.id in _get_bookmark_ids(request)
+    google = _get_google_place(b.google_place_id) if b.google_place_id else None
+    google_reviews = (google or {}).get("reviews") or []
+
+    combined_reviews = []
+    for review in google_reviews:
+        combined_reviews.append(
+            {
+                "source": "google",
+                "rating": review.get("rating"),
+                "name": review.get("author"),
+                "date": review.get("relative_time"),
+                "comment": review.get("text"),
+                "google_maps_uri": review.get("google_maps_uri"),
+            }
+        )
+    for review in reviews:
+        if len(combined_reviews) >= 20:
+            break
+        combined_reviews.append(
+            {
+                "source": "ouray",
+                "rating": review.rating,
+                "name": review.name,
+                "date": review.created_at,
+                "comment": review.comment,
+            }
+        )
+
+    ouray_fill_percent = _rating_to_percent(avg_rating)
+    google_rating = (google or {}).get("rating")
+    google_user_count = (google or {}).get("user_rating_count") or 0
+    google_fill_percent = _rating_to_percent(google_rating)
+    google_maps_uri = (google or {}).get("google_maps_uri")
 
     context = {
         "b": b,
         "avg_rating": avg_rating,
         "review_count": review_count,
-        "reviews": reviews,
+        "combined_reviews": combined_reviews[:20],
         "site_key": settings.RECAPTCHA_SITE_KEY,
         "is_bookmarked": is_bookmarked,
         "review_form": {"rating": "", "name": "", "email": "", "comment": ""},
+        "ouray_fill_percent": ouray_fill_percent,
+        "google_rating": google_rating,
+        "google_user_count": google_user_count,
+        "google_fill_percent": google_fill_percent,
+        "google_maps_uri": google_maps_uri,
     }
     return render(request, "business_detail.html", context)
 
@@ -107,14 +233,47 @@ def review_submit(request, slug):
     stats = approved_reviews.aggregate(avg=Avg("rating"), count=Count("id"))
     avg_rating = stats["avg"] or 0
     review_count = stats["count"] or 0
-    reviews = approved_reviews[:8]
+    reviews = list(approved_reviews)
     is_bookmarked = b.id in _get_bookmark_ids(request)
+    google = _get_google_place(b.google_place_id) if b.google_place_id else None
+    google_reviews = (google or {}).get("reviews") or []
+
+    combined_reviews = []
+    for review in google_reviews:
+        combined_reviews.append(
+            {
+                "source": "google",
+                "rating": review.get("rating"),
+                "name": review.get("author"),
+                "date": review.get("relative_time"),
+                "comment": review.get("text"),
+                "google_maps_uri": review.get("google_maps_uri"),
+            }
+        )
+    for review in reviews:
+        if len(combined_reviews) >= 20:
+            break
+        combined_reviews.append(
+            {
+                "source": "ouray",
+                "rating": review.rating,
+                "name": review.name,
+                "date": review.created_at,
+                "comment": review.comment,
+            }
+        )
+
+    ouray_fill_percent = _rating_to_percent(avg_rating)
+    google_rating = (google or {}).get("rating")
+    google_user_count = (google or {}).get("user_rating_count") or 0
+    google_fill_percent = _rating_to_percent(google_rating)
+    google_maps_uri = (google or {}).get("google_maps_uri")
 
     context = {
         "b": b,
         "avg_rating": avg_rating,
         "review_count": review_count,
-        "reviews": reviews,
+        "combined_reviews": combined_reviews[:20],
         "site_key": settings.RECAPTCHA_SITE_KEY,
         "is_bookmarked": is_bookmarked,
         "review_form": {
@@ -123,6 +282,11 @@ def review_submit(request, slug):
             "email": email,
             "comment": comment,
         },
+        "ouray_fill_percent": ouray_fill_percent,
+        "google_rating": google_rating,
+        "google_user_count": google_user_count,
+        "google_fill_percent": google_fill_percent,
+        "google_maps_uri": google_maps_uri,
     }
 
     try:
@@ -176,9 +340,12 @@ def bookmark_toggle(request, slug):
 
 def bookmarks(request):
     bookmark_ids = _get_bookmark_ids(request)
-    businesses = _annotate_reviews(
-        Business.objects.filter(id__in=bookmark_ids)
-    ).order_by("-avg_rating", "-review_count", "name")
+    businesses = list(
+        _annotate_reviews(Business.objects.filter(id__in=bookmark_ids)).order_by(
+            "-avg_rating", "-review_count", "name"
+        )
+    )
+    _attach_google_summaries(businesses)
     return render(request, "directory/bookmarks.html", {"businesses": businesses})
 
 

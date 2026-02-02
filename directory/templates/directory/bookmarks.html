@@ -29,11 +29,14 @@
             <div class="card-rating">
               {% if b.review_count %}
                 <span class="rating-count">{{ b.review_count }} reviews</span>
-                <span class="star-bar" style="--rating: {{ b.avg_rating|default:0 }};"></span>
+                <span class="star-bar" style="--fill-percent: {{ b.ouray_fill_percent }}%;"></span>
               {% else %}
                 <span class="rating-count">No reviews yet</span>
               {% endif %}
             </div>
+            {% if b.google_rating %}
+              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+            {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
             {% else %}

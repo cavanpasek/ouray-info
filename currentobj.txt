@@ -1,65 +1,115 @@
-OBJECTIVE: UI polish + review/star display improvements + bookmarks navigation.
+OBJECTIVE: Integrate Google Reviews into our existing Ouray Info review system while keeping native reviews enabled, and render star fills with precise rounding (nearest 0.05 of full width).
 
-TASK A — Home hero subtitle spacing + remove “10 Listed”
-1) On the home page hero:
-- Move the subtitle under “ouray.info” DOWN slightly so it stays readable against the hero image (increase top margin/padding just a bit).
-- Do not change the hero image, font family, or overall hero layout—just adjust spacing so white text doesn’t disappear.
+IMPORTANT CONSTRAINT (Google API):
+- Google Places/Place Details returns a maximum of 5 Google reviews per place (no pagination).
+- Therefore, “Top 20 reviews” on the detail page must be achieved by combining:
+  - OurayInfo approved reviews (unlimited)
+  - Google reviews (up to 5)
+- Do NOT scrape Google reviews. Use the official Google Places API only.
+- Do NOT permanently store/copy Google review text in the database. Fetch live at request time (or short-lived in-memory cache only), to comply with Places content policies. (place_id can be stored.) 
 
-2) Remove the “10 Listed” label from the UI entirely.
-- Omit it from the template (not just hide it).
+TASK A — Add Google Place ID mapping to each Business
+1) Add a field to Business:
+- google_place_id (nullable/blank allowed)
+2) Add an admin-friendly way to set it:
+- Show google_place_id in Business admin list/detail.
+- Optionally add a simple “lookup helper” management command or admin action (nice-to-have), but keep minimal.
 
-3) Move the “Sort: ____” control UP to replace where “10 Listed” was.
-- The sort control should appear in that same spot in a clean, balanced way.
-- Keep the control styling consistent with existing design.
+TASK B — Fetch Google rating + reviews on business detail page
+1) On business detail GET:
+- If google_place_id exists:
+  - Call Google Places API Place Details to fetch:
+    - rating (average)
+    - userRatingCount (count)
+    - reviews (array; max 5)
+    - optionally: url / googleMapsUri if available (to link “Read more on Google”)
+- If google_place_id is missing:
+  - Skip Google section gracefully (no errors).
+2) API key:
+- Read GOOGLE_MAPS_API_KEY from environment variables only.
+- Do not hardcode keys.
 
-TASK B — Add “Bookmarked” nav link + bookmarks page access
-1) Add a “Bookmarked” link in the top row navigation on the home page (same row as Coffee/Restaurants/Shopping/Other/Contact).
-- Label: “Bookmarked”
-- It should be placed at the top with the other nav links (a normal nav item, not a button).
-- Link target: /bookmarks/
-- Styling should match existing nav links.
+TASK C — Display unified ratings + stars with 0.05 rounding
+We have two rating sources:
+- OurayInfo native reviews (approved only)
+- Google rating (if available)
 
-2) Ensure /bookmarks/ page is usable and matches the site style:
-- Uses the same hero background style if other pages do.
-- Shows user bookmarked businesses as cards (same card component).
-- Includes star rating + review count on bookmarked cards (see TASK E).
+UI requirements:
+1) On business detail page:
+- Show BOTH sources clearly and elegantly, e.g.:
+  - “Ouray.info rating: ★★★★☆ (4.35) · 12 reviews”
+  - “Google rating: ★★★★☆ (4.40) · 87 reviews (Read on Google)”
+- Keep it visually clean; don’t make it cluttered.
 
-TASK C — Business detail page: remove letter bubble + separate top-right action bubbles
-1) On the business detail page:
-- Remove the “letter bubble” in the top-right corner (omit from template).
-- Keep “Visit Website” and “Bookmark/Bookmarked” in the top-right, but add spacing so the bubbles DO NOT touch.
-- Maintain consistent bubble styling (same size/shape), just add gap/margin.
+2) Star fill:
+- Stars must fill left-to-right.
+- The fill amount must round to nearest 0.05 of full width (i.e., 5% increments).
+  - Example: fill_fraction = rating/5
+  - rounded = round(fill_fraction / 0.05) * 0.05
+  - percent = rounded * 100
+- Implement with a CSS overlay fill approach (recommended):
+  - 5 empty stars as base + filled stars clipped to width var(--fill-percent).
+  - No new dependencies.
 
-TASK D — Star fill display + review count on business detail page
-1) For businesses with approved reviews:
-- Show “# Reviews” to the LEFT (e.g., “12 reviews”).
-- To the RIGHT of that, show a star rating bar using 5 stars that fill from left to right based on average rating (cool “*****” fill effect).
-- Stars should visually fill (not just plain text). Make it elegant (match existing UI, not cartoonish).
-- If there are 0 reviews, show something subtle like “No reviews yet” and do NOT show filled stars.
+TASK D — “Top 20 reviews” on detail page (combined list)
+Goal: Display up to 20 reviews total on the detail page, combining Google + OurayInfo reviews.
 
-Implementation guidance:
-- Use average rating (approved reviews only).
-- Use a simple and stable rendering method:
-  - Option A: 5 star icons with a CSS overlay fill based on percentage (recommended)
-  - Option B: render filled vs empty stars based on rounding rules (acceptable)
-- Keep it lightweight: no new dependencies.
+Rules:
+1) OurayInfo reviews:
+- Only approved reviews appear.
+- Show rating, name (if any), date, comment.
+2) Google reviews:
+- Display what the API provides (author name, rating, relative time, text).
+- Include “Powered by Google”/attribution if required by returned content / policy.
+- Provide a “Read more on Google” link if we have a URL.
+3) Combine into one list (max 20):
+- If Google reviews exist, include them first under a “From Google” label OR interleave by recency if timestamps are available.
+- Fill remaining slots with OurayInfo approved reviews until you reach 20.
+- If total reviews < 20, show what exists (no empty placeholders).
 
-TASK E — Show stars + review counts on business cards
-1) On business listing cards (home/category lists and bookmarks list):
-- Display average rating stars + review count (approved reviews only).
-- Keep it compact and readable—ideally under the business name or near the meta line.
-- If 0 reviews, show “No reviews yet” or omit the stars entirely (choose whichever looks more elegant).
+TASK E — Business cards show BOTH Ouray and Google summary (compact)
+On business listing cards:
+- Keep it compact; do not make cards tall.
+- Show:
+  - OurayInfo stars + approved review count (if any)
+  - If Google rating exists AND google_place_id is set, show a small “Google ★ 4.4 (87)” line or badge.
+- Use the same star fill rounding logic (0.05 increments).
 
-CONSTRAINTS
-- Do NOT add new dependencies.
-- Do NOT change database schema (reviews model already exists).
-- Keep changes minimal and localized.
-- Reuse existing styles/components wherever possible; avoid duplicating large CSS blocks.
+TASK F — Keep native reviews fully functional
+- Users can still leave reviews on OurayInfo.
+- OurayInfo review submission still uses reCAPTCHA + moderation approval flow as currently implemented.
+- Approved OurayInfo reviews update OurayInfo aggregates and sorting.
+
+TASK G — Sorting businesses (clarify which rating drives sorting)
+Update default sorting rules:
+- Primary: OurayInfo average rating (approved only), then OurayInfo review count.
+- Secondary (tie-break or optional toggle): Google rating/userRatingCount if present.
+- Add an optional sort dropdown:
+  - Top Rated (Ouray) [default]
+  - Top Rated (Google)
+  - Most Reviewed (Ouray)
+  - A–Z
+Keep it elegant and minimal.
+
+FILES EXPECTED TO TOUCH
+- directory/models.py (Business.google_place_id)
+- directory/admin.py (show/edit google_place_id)
+- directory/views.py (detail page: fetch google data; cards: annotate/merge)
+- directory/templates/... (business_detail.html + business cards partial)
+- directory/static/.../site.css (stars fill component + small badge styles)
+- config/settings.py (GOOGLE_MAPS_API_KEY env read)
+- migrations (for google_place_id field)
 
 DELIVERABLES
-- List exact files you will modify before implementing.
-- Implement the changes.
-- Provide a quick checklist of pages to test:
-  - / (hero subtitle spacing, sort control location, “Bookmarked” link, cards show stars)
-  - /bookmarks/ (cards show stars)
-  - business detail page (no letter bubble, action bubbles spaced, star fill + review count)
+1) List exact files to change before implementing.
+2) Implement Google integration and combined top-20 reviews display.
+3) Implement star fill rounding to 0.05 increments and reuse it everywhere (detail + cards).
+4) Provide env vars needed (GOOGLE_MAPS_API_KEY) and brief setup steps.
+5) Provide test checklist and URLs to verify.
+
+TEST CHECKLIST
+- Business without google_place_id: page works, shows only OurayInfo reviews.
+- Business with google_place_id: shows Google rating + up to 5 Google reviews + link to Google.
+- Detail page shows up to 20 combined reviews total.
+- Stars fill rounds in 5% increments (0.05) and fills left-to-right.
+- Cards show compact rating summaries and still look elegant.

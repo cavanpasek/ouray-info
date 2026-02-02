@@ -32,6 +32,9 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
 RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
 
+# Google Places API
+GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
+
 # Email (env vars only)
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND",

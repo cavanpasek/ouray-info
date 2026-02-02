@@ -24,7 +24,7 @@ class BusinessAdminForm(forms.ModelForm):
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
     form = BusinessAdminForm
-    list_display = ("name", "category", "website")
+    list_display = ("name", "category", "website", "google_place_id")
     search_fields = ("name", "category")
     prepopulated_fields = {"slug": ("name",)}
     fields = (
@@ -37,6 +37,7 @@ class BusinessAdmin(admin.ModelAdmin):
         "address",
         "logo_image",
         "hero_image",
+        "google_place_id",
     )
 
 

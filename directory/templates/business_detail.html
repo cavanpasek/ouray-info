@@ -32,10 +32,28 @@
           {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
           <div class="detail-rating">
             {% if review_count %}
-              <span class="rating-count">{{ review_count }} reviews</span>
-              <span class="star-bar" style="--rating: {{ avg_rating|default:0 }};"></span>
+              <div class="rating-row">
+                <span class="rating-label">Ouray.info</span>
+                <span class="rating-count">{{ review_count }} reviews</span>
+                <span class="star-bar" style="--fill-percent: {{ ouray_fill_percent }}%;"></span>
+                <span class="rating-score">{{ avg_rating|floatformat:2 }}</span>
+              </div>
             {% else %}
-              <span class="rating-count">No reviews yet</span>
+              <div class="rating-row">
+                <span class="rating-count">No reviews yet</span>
+              </div>
+            {% endif %}
+
+            {% if google_rating %}
+              <div class="rating-row">
+                <span class="rating-label">Google</span>
+                <span class="rating-count">{{ google_user_count }} reviews</span>
+                <span class="star-bar" style="--fill-percent: {{ google_fill_percent }}%;"></span>
+                <span class="rating-score">{{ google_rating|floatformat:2 }}</span>
+                {% if google_maps_uri %}
+                  <a class="rating-link" href="{{ google_maps_uri }}" target="_blank" rel="noopener">Read on Google</a>
+                {% endif %}
+              </div>
             {% endif %}
           </div>
         </div>
@@ -90,19 +108,35 @@
         <h2 class="review-title">Reviews</h2>
 
         <div class="review-list">
-          {% for r in reviews %}
+          {% for r in combined_reviews %}
             <article class="review-card">
               <div class="review-head">
                 <span class="review-stars">{{ r.rating }}/5</span>
-                <span class="review-date">{{ r.created_at|date:"M j, Y" }}</span>
+                <span class="review-source">
+                  {% if r.source == "google" %}Google{% else %}Ouray.info{% endif %}
+                </span>
+                <span class="review-date">
+                  {% if r.source == "google" %}
+                    {{ r.date }}
+                  {% else %}
+                    {{ r.date|date:"M j, Y" }}
+                  {% endif %}
+                </span>
               </div>
               {% if r.name %}<div class="review-name">{{ r.name }}</div>{% endif %}
               <p class="review-comment">{{ r.comment }}</p>
+              {% if r.source == "google" and r.google_maps_uri %}
+                <a class="review-link" href="{{ r.google_maps_uri }}" target="_blank" rel="noopener">Read on Google</a>
+              {% endif %}
             </article>
           {% empty %}
             <p class="detail-desc detail-desc--muted">No reviews yet.</p>
           {% endfor %}
         </div>
+
+        {% if google_rating %}
+          <p class="review-attrib">Powered by Google</p>
+        {% endif %}
 
         <div class="review-form-wrap">
           <h3 class="review-subtitle">Add a review</h3>
