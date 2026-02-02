@@ -34,7 +34,6 @@
             {% if review_count %}
               <div class="rating-row">
                 <span class="rating-label">ouray.info:</span>
-                <span class="star-bar" style="--fill-percent: {{ ouray_fill_percent }}%;"></span>
                 <span class="rating-score">{{ avg_rating|floatformat:1 }}</span>
                 <span class="rating-dot">·</span>
                 <span class="rating-count">{{ review_count }} reviews</span>
@@ -49,7 +48,6 @@
             {% if google_rating %}
               <div class="rating-row">
                 <span class="rating-label">Google:</span>
-                <span class="star-bar" style="--fill-percent: {{ google_fill_percent }}%;"></span>
                 <span class="rating-score">{{ google_rating|floatformat:1 }}</span>
                 <span class="rating-dot">·</span>
                 <span class="rating-count">{{ google_user_count }} reviews</span>

@@ -1,69 +1,52 @@
-OBJECTIVE: Front-end/nav + sorting + category layout + review text polish (UI only). Keep changes minimal and consistent with existing design language. No new dependencies. No database/schema changes unless absolutely necessary to add the new “Attractions” category.
+OBJECTIVE: Front-end polish changes (minimal edits). Remove the Explore category section, adjust colors, fix encoding, and simplify detail-page rating display.
 
-TASK 1 — Top navigation: condense + center
-- On the home page top navigation row, replace the separate links “Coffee”, “Restaurants”, “Shopping” with a single nav item labeled “Explore”.
-- Keep “Contact” and “Bookmarked” as separate nav items.
-- Resulting nav items: Explore | Contact | Bookmarked
-- Center these three items horizontally on the page (not left-aligned, not spaced weirdly).
-- “Explore” should navigate to the section where category links/tiles/cards can be accessed (choose the cleanest behavior):
-  - Option A: anchor jump to the categories section (preferred if you already use anchors)
-  - Option B: open a small dropdown menu listing Coffee / Restaurants / Shopping (only if you can do it elegantly with minimal JS/CSS; otherwise use anchor jump)
-- Ensure mobile layout still looks clean (wrap gracefully if needed).
+TASK 1 — Remove Explore category section, keep Explore nav as a scroll link
+- Omit/remove the entire Explore category/section that was added on the page (do not display an “Explore” content block anywhere).
+- Keep the “Explore” item in the top nav, but change its behavior to ONLY scroll/jump to where the Coffee section starts.
+  - Implement as an anchor link to the Coffee section (e.g., href="#coffee" or the correct existing anchor).
+  - Add/ensure the Coffee section has the correct id for the anchor target.
+- Keep top nav centered and only containing: Explore | Contact | Bookmarked.
 
-TASK 2 — Sort dropdown options (simplify)
-- Update the Sort dropdown label:
-  - Rename “Top Rated (Ouray)” to “Top Rated (ouray.info)”
-- Remove the “Most Reviewed (Ouray)” option entirely.
-- Final dropdown options should be ONLY:
-  1) Top Rated (ouray.info)  [default]
-  2) Top Rated (Google)
-  3) A–Z
-- Ensure the sorting backend mapping still works and does not reference removed options.
+TASK 2 — Attractions text color to dark blue (palette-consistent)
+- On the Attractions category section, update the subtitle text:
+  “rails, sights, experiences, and local gems.”
+  - Set this subtitle font color to a DARK BLUE that matches the existing palette (use an existing CSS variable/color if available; do not invent a random blue).
+  - Ensure it remains readable over the snowy background (adjust opacity/weight if needed but keep color dark blue).
 
-TASK 3 — Add “Attractions” category + rearrange blocks
-- Add a new category: “Attractions”.
-- Update the home page category sections so:
-  - “Attractions” becomes the category that sits over the snowy mountains image where “Other” currently is.
-  - “Attractions” heading/subheading text should be BLUE (choose the same blue accent used elsewhere; ensure readable over snowy image).
-  - Move “Other” into its own new solid-color block section below (a new category section like the others).
-  - Since “Other” is no longer over the snowy background, set “Other / Everything not yet categorized” text to WHITE like the other category headings.
-- Ensure clicking “Attractions” shows businesses from that category like the others.
-- If categories are model-backed/enumerated:
-  - Add “Attractions” to the allowed category choices and update any fixtures/admin forms accordingly (minimal change; no redesign).
-  - If categories are not model-backed, update the template logic accordingly.
+TASK 3 — Other category background to dark blue (palette-consistent)
+- Update the background of the bottom “Other” category block/section to a DARK BLUE from the existing palette.
+- Ensure the “Other / Everything not yet categorized” text stays readable (likely white).
+- Keep spacing and layout unchanged; just update the background color.
 
-TASK 4 — Review text copy + details page elegance
-A) Business cards
-- If a business has 0 approved ouray.info reviews, replace the card text:
-  - From: “No reviews yet”
-  - To: “No ouray.info reviews yet”
+TASK 4 — Fix Google star character encoding on cards
+- Business cards in the Other category show broken text: “Google â˜… 4.7 (157)”
+- Replace the star rendering so it uses a safe Unicode star or HTML entity:
+  - Preferred: “Google ★ 4.7 (157)”
+  - Or use “&#9733;” for the star so it never mojibakes.
+- Ensure this is fixed across all categories/cards (not just Other).
 
-B) Business detail page rating blocks (make more elegant)
-- Replace the current verbose layout:
-  - “No reviews yet”
-  - “Google 122 reviews 4.80 Read on Google”
-- With a cleaner, consistent two-line (or two-row) presentation:
-  - ouray.info: ★ 4.5 · 12 reviews
-  - Google: ★ 4.8 · 122 reviews (Read on Google link optional, subtle)
-- If ouray.info has 0 reviews:
-  - Show: “ouray.info: No ouray.info reviews yet” (no stars)
-- If Google data exists:
-  - Show: “Google: ★ 4.8 · 122 reviews” (stars should still use your fill style, but keep it compact)
-- Keep both sources clearly labeled (ouray.info vs Google) but visually minimal.
-- Keep your star fill rounding behavior unchanged (nearest 0.05 fill steps).
+TASK 5 — Detail page rating display: remove star visuals, keep linked “Read on Google”
+- On the business detail page, remove the visual star fill/***** display entirely (no star component for ratings).
+- Replace the Google line with this exact clean format:
+  Google: "4.7" * - 157 reviews
+  - Keep “Read on Google” underlined and as a link to that business’s Google reviews page (same link target currently used).
+  - Place “Read on Google” at the end of the Google line or directly beneath it (whichever is more elegant), but keep it obvious and clickable.
+- For ouray.info line:
+  - Also remove star visuals; show a clean numeric rating and review count if reviews exist, or:
+    “ouray.info: No ouray.info reviews yet”
+- Keep typography consistent and elegant; minimal layout changes.
 
 CONSTRAINTS
-- Minimal edits; reuse existing components/styles.
+- Minimal file changes; reuse existing palette variables.
 - No new dependencies.
-- Do not break existing routes or review functionality.
-- Keep typography and spacing consistent.
+- Do not change backend review logic; only adjust rendering/copy/anchors/styles.
 
 DELIVERABLES
 - List exact files you will modify before implementing.
-- Implement all changes.
-- Provide a quick test checklist:
-  - Home page nav looks centered and Explore works
-  - Sort dropdown has only 3 options and works
-  - Attractions section appears over snowy image; Other moved to new solid block and text colors correct
-  - Cards show “No ouray.info reviews yet”
-  - Detail page rating section is simplified and elegant for both 0-review and reviewed businesses
+- Implement all requested changes.
+- Provide quick test checklist:
+  - Home: Explore scrolls to Coffee, no Explore section exists
+  - Attractions subtitle is dark blue and readable
+  - Other section background is dark blue and readable
+  - Cards show “Google ★ …” (no â˜… encoding)
+  - Detail page shows numeric rating lines (no star visuals) + “Read on Google” link intact

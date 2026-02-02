@@ -35,7 +35,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>

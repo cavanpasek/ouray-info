@@ -14,7 +14,7 @@
 
 <nav class="topnav" aria-label="Categories">
   <div class="container topnav-inner">
-    <a class="topnav-link" href="#explore">Explore</a>
+    <a class="topnav-link" href="#coffee">Explore</a>
     <a class="topnav-link" href="/contact/">Contact</a>
     <a class="topnav-link" href="/bookmarks/">Bookmarked</a>
   </div>
@@ -34,20 +34,6 @@
         <option value="az" {% if sort == "az" %}selected{% endif %}>A–Z</option>
       </select>
     </form>
-  </div>
-</section>
-
-<section id="explore" class="band band--solid band--explore">
-  <div class="container band-head">
-    <h2 class="band-title">Explore</h2>
-    <p class="band-meta">Jump to a category.</p>
-  </div>
-  <div class="container explore-links">
-    <a class="pill" href="#coffee">Coffee</a>
-    <a class="pill" href="#restaurants">Restaurants</a>
-    <a class="pill" href="#shopping">Shopping</a>
-    <a class="pill" href="#attractions">Attractions</a>
-    <a class="pill" href="#other">Other</a>
   </div>
 </section>
 
@@ -75,7 +61,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
@@ -119,7 +105,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
@@ -161,7 +147,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
@@ -206,7 +192,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google ★ {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
@@ -248,7 +234,7 @@
               {% endif %}
             </div>
             {% if b.google_rating %}
-              <div class="card-google">Google â˜… {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
+              <div class="card-google">Google &#9733; {{ b.google_rating|floatformat:1 }} ({{ b.google_user_count }})</div>
             {% endif %}
             {% if b.description %}
               <p class="card-desc">{{ b.description|truncatechars:140 }}</p>
@@ -267,3 +253,9 @@
 </section>
 
 {% endblock %}
+
+
+
+
+
+

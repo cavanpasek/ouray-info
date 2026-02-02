@@ -239,10 +239,14 @@ section[id]{ scroll-margin-top: 86px; }
 /* Snowy “Other” headings use dark text for contrast */
 .band-head--snow .band-title{ color: var(--snow-text); text-shadow: none; }
 .band-head--snow .band-meta{ color: var(--snow-muted); text-shadow: none; }
-.band-head--attractions .band-title,
 .band-head--attractions .band-meta{
-  color: var(--accent);
+  color: var(--baltic);
   text-shadow: none;
+  font-weight: 650;
+}
+
+.band--other{
+  background-color: var(--navy);
 }
 
 .explore-links{
