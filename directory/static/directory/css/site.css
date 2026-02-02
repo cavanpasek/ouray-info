@@ -241,7 +241,7 @@ section[id]{ scroll-margin-top: 86px; }
 .band-head--snow .band-meta{ color: var(--snow-muted); text-shadow: none; }
 .band-head--attractions .band-title,
 .band-head--attractions .band-meta{
-  color: var(--baltic);
+  color: var(--prussian);
   text-shadow: none;
   font-weight: 650;
 }
