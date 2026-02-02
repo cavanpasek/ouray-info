@@ -245,6 +245,9 @@ section[id]{ scroll-margin-top: 86px; }
   text-shadow: none;
   font-weight: 650;
 }
+.band-head--attractions .band-meta{
+  margin-top: 4px;
+}
 
 .band--other{
   background-color: var(--prussian);
