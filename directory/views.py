@@ -44,15 +44,7 @@ def get_google_place_data(place_id):
     }
 
     if not place_id or not settings.GOOGLE_MAPS_API_KEY:
-        if place_id:
-            print(
-                f"[google] called place_id={place_id} key_present={str(bool(settings.GOOGLE_MAPS_API_KEY)).lower()}"
-            )
         return defaults
-
-    print(
-        f"[google] called place_id={place_id} key_present={str(bool(settings.GOOGLE_MAPS_API_KEY)).lower()}"
-    )
 
     now = time.time()
     cached = _google_cache.get(place_id)
@@ -259,7 +251,6 @@ def business_detail(request, slug):
     reviews = list(approved_reviews)
     is_bookmarked = b.id in _get_bookmark_ids(request)
     google_place_id = b.google_place_id or ""
-    google_key_present = bool(settings.GOOGLE_MAPS_API_KEY)
     google = get_google_place_data(google_place_id)
     google_reviews = google.get("google_reviews", [])
 
@@ -293,9 +284,6 @@ def business_detail(request, slug):
     google_user_count = google.get("google_count") or 0
     google_fill_percent = _rating_to_percent(google_rating)
     google_maps_uri = google.get("google_url")
-    google_http_status = google.get("google_http_status", "none")
-    google_error_label = google.get("google_error_label", "")
-
     context = {
         "b": b,
         "avg_rating": avg_rating,
@@ -309,11 +297,6 @@ def business_detail(request, slug):
         "google_user_count": google_user_count,
         "google_fill_percent": google_fill_percent,
         "google_maps_uri": google_maps_uri,
-        "google_place_id": google_place_id,
-        "google_key_present": google_key_present,
-        "google_http_status": google_http_status,
-        "google_error_label": google_error_label,
-        "google_reviews_count": len(google_reviews),
     }
     return render(request, "business_detail.html", context)
 
