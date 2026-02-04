@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
+<!-- Business detail page with reviews and actions -->
 
 {% block title %}{{ b.name }} | ouray.info{% endblock %}
 {% block body_class %}detail{% endblock %}
 
 {% block extra_head %}
+  <!-- Preload hero image and load reCAPTCHA -->
   <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
+<!-- Top navigation back to category sections -->
 <nav class="topnav" aria-label="Categories">
   <div class="container topnav-inner">
     <a class="topnav-link" href="{% url 'home' %}#coffee">Coffee</a>
@@ -19,12 +22,15 @@
   </div>
 </nav>
 
+<!-- Hero section with imagery, ratings, and actions -->
 <section class="detail-hero" style="--band-image: url('{% if b.hero_image %}{{ b.hero_image.url }}{% else %}{% static "directory/img/abrams-image.jpg" %}{% endif %}');">
   <div class="detail-overlay"></div>
 
   <div class="container detail-shell">
+    <!-- Link back to the directory -->
     <p class="backlink"><a href="{% url 'home' %}">← Back to directory</a></p>
 
+    <!-- Business identity and rating summary -->
     <header class="detail-header">
       <div class="detail-brand">
         <div>
@@ -32,6 +38,7 @@
           {% if b.category %}<div class="detail-sub"><span class="pill">{{ b.category }}</span></div>{% endif %}
           <div class="detail-rating">
             {% if review_count %}
+              <!-- Local review stats -->
               <div class="rating-row">
                 <span class="rating-label">ouray.info:</span>
                 <span class="rating-score">{{ avg_rating|floatformat:1 }}</span>
@@ -46,6 +53,7 @@
             {% endif %}
 
             {% if google_rating %}
+              <!-- Google review stats -->
               <div class="rating-row">
                 <span class="rating-label">Google:</span>
                 <span class="rating-score">{{ google_rating|floatformat:1 }}</span>
@@ -60,11 +68,13 @@
         </div>
       </div>
 
+      <!-- Logo and action buttons -->
       <div class="detail-side">
         {% if b.logo_image %}
           <img class="detail-logo detail-logo--top" src="{{ b.logo_image.url }}" alt="{{ b.name }} logo">
         {% endif %}
 
+        <!-- Primary call-to-actions -->
         <div class="detail-cta">
           {% if b.website %}
             <a class="btn" href="{{ b.website }}" target="_blank" rel="noopener">Visit website</a>
@@ -79,13 +89,16 @@
       </div>
     </header>
 
+    <!-- Main detail content -->
     <div class="detail-body">
+      <!-- Description -->
       {% if b.description %}
         <p class="detail-desc">{{ b.description }}</p>
       {% else %}
         <p class="detail-desc detail-desc--muted">No description yet.</p>
       {% endif %}
 
+      <!-- Structured metadata (address, phone, website, deals) -->
       <div class="detail-meta-grid">
         {% if b.address %}
           <div class="meta-row"><span class="meta-label">Address</span><span class="meta-value">{{ b.address }}</span></div>
@@ -111,14 +124,17 @@
         </div>
       </div>
 
+      <!-- Back button for quick navigation -->
       <div class="detail-actions">
         <a class="btn btn-ghost" href="{% url 'home' %}">Back</a>
       </div>
 
+      <!-- Reviews section -->
       <div class="review-block">
         <h2 class="review-title">Reviews</h2>
 
         <div class="review-list">
+          <!-- Combined Google + local reviews -->
           {% for r in combined_reviews %}
             <article class="review-card">
               <div class="review-head">
@@ -146,10 +162,12 @@
         </div>
 
         {% if google_rating %}
+          <!-- Attribution required for Google-sourced content -->
           <p class="review-attrib">Powered by Google</p>
         {% endif %}
 
 
+        <!-- Local review submission form -->
         <div class="review-form-wrap">
           <h3 class="review-subtitle">Add a review</h3>
           {% if review_error %}
@@ -157,6 +175,7 @@
           {% endif %}
           <form method="post" class="card contact-form" action="{% url 'review_submit' b.slug %}">
             {% csrf_token %}
+            <!-- Rating + identity fields -->
             <div class="detail-meta-grid">
               <label class="meta-row">
                 <span class="meta-label">Rating</span>
@@ -181,10 +200,12 @@
               </label>
             </div>
 
+            <!-- reCAPTCHA widget -->
             <div style="margin-top: 16px;">
               <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
             </div>
 
+            <!-- Submit action -->
             <div class="detail-actions" style="margin-top: 16px;">
               <button class="btn" type="submit">Submit review</button>
             </div>

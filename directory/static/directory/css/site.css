@@ -1,3 +1,4 @@
+/* Global theme tokens used across the site */
 :root{
   --prussian: #000022;
   --navy: #001242;
@@ -27,6 +28,7 @@
   --nav-blur: 0;
 }
 
+/* Base reset and defaults */
 *{ box-sizing: border-box; }
 html{
   scroll-behavior: smooth;
@@ -34,6 +36,7 @@ html{
 }
 html, body{ height: 100%; }
 
+/* Global body typography and background */
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -43,12 +46,14 @@ body{
   scrollbar-width: none;
 }
 
+/* Hide scrollbars while keeping scroll functionality */
 html::-webkit-scrollbar,
 body::-webkit-scrollbar{
   width: 0;
   height: 0;
 }
 
+/* Constrain content width with responsive gutters */
 .container{
   width: min(1100px, calc(100% - 32px));
   margin: 0 auto;
@@ -217,6 +222,7 @@ section[id]{ scroll-margin-top: 86px; }
   font-size: 13px;
 }
 
+/* Solid background bands for non-image sections */
 .band--solid{
   background: radial-gradient(1000px 600px at 20% 0%, rgba(58,111,132,0.10), transparent 55%),
               radial-gradient(900px 600px at 90% 10%, rgba(0,94,124,0.12), transparent 60%);
@@ -253,6 +259,7 @@ section[id]{ scroll-margin-top: 86px; }
   background-color: var(--prussian);
 }
 
+/* Reusable link groups */
 .explore-links{
   display:flex;
   flex-wrap: wrap;
@@ -357,6 +364,7 @@ section[id]{ scroll-margin-top: 86px; }
   margin-top: 14px;
 }
 
+/* Pill label for categories */
 .pill{
   display:inline-flex;
   align-items:center;
@@ -571,6 +579,7 @@ section[id]{ scroll-margin-top: 86px; }
   line-height: 1.7;
 }
 
+/* Key-value metadata rows */
 .detail-meta-grid{
   margin-top: 14px;
   display:grid;
@@ -674,6 +683,7 @@ section[id]{ scroll-margin-top: 86px; }
   box-shadow: 0 0 0 3px rgba(58,111,132,0.35);
 }
 
+/* Reviews list and cards */
 .review-block{
   margin-top: 26px;
   padding-top: 18px;

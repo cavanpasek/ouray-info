@@ -5,12 +5,15 @@ import django.db.models.deletion
 import django.core.validators
 
 
+# Add the Review model for business ratings and comments.
 class Migration(migrations.Migration):
 
+    # Requires the image fields on Business.
     dependencies = [
         ("directory", "0003_business_images"),
     ]
 
+    # Create the Review table and its relation to Business.
     operations = [
         migrations.CreateModel(
             name="Review",

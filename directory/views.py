@@ -12,9 +12,11 @@ from django.db.models.functions import Coalesce
 
 from .models import Business, Review
 
+# Small in-memory cache to reduce Google Places API calls per place ID.
 GOOGLE_CACHE_TTL = 300
 _google_cache = {}
 
+# Annotate businesses with average rating and count for approved reviews.
 def _annotate_reviews(queryset):
     return queryset.annotate(
         avg_rating=Coalesce(
@@ -24,6 +26,7 @@ def _annotate_reviews(queryset):
     )
 
 
+# Convert a 1-5 rating into a percentage for star-fill UI.
 def _rating_to_percent(rating):
     if not rating:
         return 0
@@ -32,7 +35,9 @@ def _rating_to_percent(rating):
     return round(rounded * 100, 2)
 
 
+# Fetch place details from Google Places API with defensive error handling.
 def get_google_place_data(place_id):
+    # Default payload mirrors template expectations even on error.
     defaults = {
         "google_rating": None,
         "google_count": None,
@@ -43,15 +48,18 @@ def get_google_place_data(place_id):
         "google_error_label": "",
     }
 
+    # Skip API calls when missing config or ID.
     if not place_id or not settings.GOOGLE_MAPS_API_KEY:
         return defaults
 
     now = time.time()
     cached = _google_cache.get(place_id)
+    # Return cached data if still fresh.
     if cached and (now - cached["ts"] < GOOGLE_CACHE_TTL):
         return cached["data"]
 
     try:
+        # Build Places Details request with the fields the UI needs.
         query = urllib.parse.urlencode(
             {
                 "place_id": place_id,
@@ -64,6 +72,7 @@ def get_google_place_data(place_id):
         with urllib.request.urlopen(req, timeout=8) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
+        # Handle non-2xx responses and extract any error payload for display.
         if settings.DEBUG:
             print(f"[google] place_id={place_id} http_status={exc.code} error=HTTPError")
         body = ""
@@ -100,6 +109,7 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = label
         return defaults
     except urllib.error.URLError as exc:
+        # Handle network-level errors (DNS, timeout, etc.).
         if settings.DEBUG:
             print(f"[google] place_id={place_id} http_status=none error=URLError")
         defaults["google_error"] = "url_error"
@@ -107,6 +117,7 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = "URLError"
         return defaults
     except json.JSONDecodeError:
+        # Handle malformed JSON responses.
         if settings.DEBUG:
             print(f"[google] place_id={place_id} http_status=none error=JSONDecodeError")
         defaults["google_error"] = "json_error"
@@ -114,6 +125,7 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = "JSONDecodeError"
         return defaults
     except Exception:
+        # Catch-all for unexpected errors to keep the page loading.
         if settings.DEBUG:
             print(f"[google] place_id={place_id} http_status=none error=Exception")
         defaults["google_error"] = "unknown_error"
@@ -121,6 +133,7 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = "Exception"
         return defaults
 
+    # Handle API-level errors (e.g., REQUEST_DENIED).
     status_text = payload.get("status")
     if status_text and status_text != "OK":
         message = payload.get("error_message", "")
@@ -132,6 +145,7 @@ def get_google_place_data(place_id):
         defaults["google_error_label"] = label or status_text
         return defaults
 
+    # Pull the result payload and normalize into our expected shape.
     result = payload.get("result") or {}
 
     data = {
@@ -144,6 +158,7 @@ def get_google_place_data(place_id):
         "google_error_label": "",
     }
 
+    # Normalize review data for template rendering.
     for review in result.get("reviews", []) or []:
         text_payload = review.get("text")
         if isinstance(text_payload, dict):
@@ -161,10 +176,12 @@ def get_google_place_data(place_id):
             }
         )
 
+    # Cache the response for a short period to reduce API usage.
     _google_cache[place_id] = {"ts": now, "data": data}
     return data
 
 
+# Enrich each business object with computed rating summaries.
 def _attach_google_summaries(businesses):
     for b in businesses:
         b.ouray_fill_percent = _rating_to_percent(getattr(b, "avg_rating", 0))
@@ -181,11 +198,13 @@ def _attach_google_summaries(businesses):
                 b.google_maps_uri = google.get("google_url")
 
 
+# Parse bookmark IDs from session into a set of ints.
 def _get_bookmark_ids(request):
     raw_ids = request.session.get("bookmarks", [])
     return {int(v) for v in raw_ids if str(v).isdigit()}
 
 
+# Verify reCAPTCHA responses for user-submitted forms.
 def _verify_recaptcha(request, recaptcha_response):
     if not settings.RECAPTCHA_SITE_KEY or not settings.RECAPTCHA_SECRET_KEY:
         return False, "reCAPTCHA is not configured. Please try again later."
@@ -202,6 +221,7 @@ def _verify_recaptcha(request, recaptcha_response):
     ).encode("utf-8")
 
     try:
+        # POST to Google's verification endpoint.
         req = urllib.request.Request(
             "https://www.google.com/recaptcha/api/siteverify",
             data=payload,
@@ -210,6 +230,7 @@ def _verify_recaptcha(request, recaptcha_response):
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except (urllib.error.URLError, ValueError):
+        # Treat network/parse errors as failed verification.
         return False, "Verification failed. Please try again."
 
     if not data.get("success"):
@@ -218,12 +239,16 @@ def _verify_recaptcha(request, recaptcha_response):
     return True, ""
 
 
+# Homepage: list businesses with sort options and summary ratings.
 def home(request):
+    # Default to top-rated ordering when no sort parameter is supplied.
     sort = request.GET.get("sort", "top")
     businesses = list(_annotate_reviews(Business.objects.all()))
 
+    # Attach Google review summaries for display.
     _attach_google_summaries(businesses)
 
+    # Sort according to the selected mode.
     if sort == "az":
         businesses.sort(key=lambda b: (b.name,))
     elif sort == "google":
@@ -240,8 +265,10 @@ def home(request):
 
     return render(request, "home.html", {"businesses": businesses, "sort": sort})
 
+# Business detail page with combined Ouray + Google reviews.
 def business_detail(request, slug):
     b = get_object_or_404(Business, slug=slug)
+    # Build summary stats from approved local reviews.
     approved_reviews = b.reviews.filter(is_approved=True)
     stats = approved_reviews.aggregate(avg=Avg("rating"), count=Count("id"))
     avg_rating = stats["avg"] or 0
@@ -252,6 +279,7 @@ def business_detail(request, slug):
     google = get_google_place_data(google_place_id)
     google_reviews = google.get("google_reviews", [])
 
+    # Merge Google reviews first, then fill with local reviews.
     combined_reviews = []
     for review in google_reviews:
         combined_reviews.append(
@@ -282,6 +310,7 @@ def business_detail(request, slug):
     google_user_count = google.get("google_count") or 0
     google_fill_percent = _rating_to_percent(google_rating)
     google_maps_uri = google.get("google_url")
+    # Template context for the detail page and review form.
     context = {
         "b": b,
         "avg_rating": avg_rating,
@@ -299,17 +328,20 @@ def business_detail(request, slug):
     return render(request, "business_detail.html", context)
 
 
+# Handle review submissions and re-render on validation errors.
 def review_submit(request, slug):
     if request.method != "POST":
         return redirect("business_detail", slug=slug)
 
     b = get_object_or_404(Business, slug=slug)
+    # Collect and normalize user input.
     rating_raw = request.POST.get("rating", "").strip()
     name = request.POST.get("name", "").strip()
     email = request.POST.get("email", "").strip()
     comment = request.POST.get("comment", "").strip()
     recaptcha_response = request.POST.get("g-recaptcha-response", "")
 
+    # Rebuild the detail context so errors can be shown inline.
     approved_reviews = b.reviews.filter(is_approved=True)
     stats = approved_reviews.aggregate(avg=Avg("rating"), count=Count("id"))
     avg_rating = stats["avg"] or 0
@@ -370,6 +402,7 @@ def review_submit(request, slug):
         "google_maps_uri": google_maps_uri,
     }
 
+    # Validate rating input before saving.
     try:
         rating = int(rating_raw)
     except ValueError:
@@ -379,6 +412,7 @@ def review_submit(request, slug):
         context["review_error"] = "Please choose a rating between 1 and 5."
         return render(request, "business_detail.html", context)
 
+    # Validate comment length and presence.
     if not comment:
         context["review_error"] = "Please add a short comment."
         return render(request, "business_detail.html", context)
@@ -387,11 +421,13 @@ def review_submit(request, slug):
         context["review_error"] = "Comment is too long (1000 characters max)."
         return render(request, "business_detail.html", context)
 
+    # Validate reCAPTCHA before accepting submission.
     ok, error = _verify_recaptcha(request, recaptcha_response)
     if not ok:
         context["review_error"] = error
         return render(request, "business_detail.html", context)
 
+    # Create the review (approval default handled by model).
     Review.objects.create(
         business=b,
         rating=rating,
@@ -403,6 +439,7 @@ def review_submit(request, slug):
     return redirect("business_detail", slug=slug)
 
 
+# Toggle a business bookmark stored in the session.
 def bookmark_toggle(request, slug):
     if request.method != "POST":
         return redirect("business_detail", slug=slug)
@@ -415,10 +452,12 @@ def bookmark_toggle(request, slug):
     else:
         bookmark_ids.add(b.id)
 
+    # Store sorted IDs to keep session data stable.
     request.session["bookmarks"] = sorted(bookmark_ids)
     return redirect("business_detail", slug=slug)
 
 
+# List all bookmarked businesses with rating summaries.
 def bookmarks(request):
     bookmark_ids = _get_bookmark_ids(request)
     businesses = list(
@@ -430,10 +469,12 @@ def bookmarks(request):
     return render(request, "directory/bookmarks.html", {"businesses": businesses})
 
 
+# Contact form with reCAPTCHA and email delivery.
 def contact(request):
     context = {"site_key": settings.RECAPTCHA_SITE_KEY}
 
     if request.method == "POST":
+        # Collect and echo back the user input on error.
         name = request.POST.get("name", "").strip()
         email = request.POST.get("email", "").strip()
         message = request.POST.get("message", "").strip()
@@ -441,10 +482,12 @@ def contact(request):
 
         context.update({"name": name, "email": email, "message": message})
 
+        # Guard rails if reCAPTCHA is not configured.
         if not settings.RECAPTCHA_SITE_KEY or not settings.RECAPTCHA_SECRET_KEY:
             context["error"] = "reCAPTCHA is not configured. Please try again later."
             return render(request, "directory/contact.html", context)
 
+        # Require a reCAPTCHA response.
         if not recaptcha_response:
             context["error"] = "Please complete the reCAPTCHA to submit the form."
             return render(request, "directory/contact.html", context)
@@ -458,6 +501,7 @@ def contact(request):
         ).encode("utf-8")
 
         try:
+            # Verify the token with Google's endpoint.
             req = urllib.request.Request(
                 "https://www.google.com/recaptcha/api/siteverify",
                 data=payload,
@@ -469,14 +513,17 @@ def contact(request):
             context["error"] = "Verification failed. Please try again."
             return render(request, "directory/contact.html", context)
 
+        # Reject failed verification responses.
         if not data.get("success"):
             context["error"] = "reCAPTCHA verification failed. Please try again."
             return render(request, "directory/contact.html", context)
 
+        # Fail fast if email settings are not configured.
         if not settings.DEFAULT_FROM_EMAIL or not settings.EMAIL_HOST:
             context["error"] = "Email is not configured. Please try again later."
             return render(request, "directory/contact.html", context)
 
+        # Prepare the email payload.
         subject = "New Ouray Info Contact Form Submission"
         body = (
             f"Name: {name}\n"
@@ -485,6 +532,7 @@ def contact(request):
         )
 
         try:
+            # Send the email to the configured recipients.
             send_mail(
                 subject,
                 body,
@@ -496,10 +544,12 @@ def contact(request):
             context["error"] = "Email sending failed. Please try again."
             return render(request, "directory/contact.html", context)
 
+        # Redirect to a success page to avoid resubmission on refresh.
         return redirect("contact_success")
 
     return render(request, "directory/contact.html", context)
 
 
+# Simple success confirmation page.
 def contact_success(request):
     return render(request, "directory/contact_success.html")

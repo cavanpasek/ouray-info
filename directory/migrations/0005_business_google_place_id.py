@@ -3,12 +3,15 @@
 from django.db import migrations, models
 
 
+# Add Google Place ID field for external review lookups.
 class Migration(migrations.Migration):
 
+    # Requires the Review model migration.
     dependencies = [
         ("directory", "0004_review"),
     ]
 
+    # Add the google_place_id field to Business.
     operations = [
         migrations.AddField(
             model_name="business",

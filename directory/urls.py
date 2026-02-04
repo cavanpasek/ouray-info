@@ -9,6 +9,7 @@ from .views import (
     bookmarks,
 )
 
+# Public routes for the directory app.
 urlpatterns = [
     path("", home, name="home"),
     path("contact/", contact, name="contact"),

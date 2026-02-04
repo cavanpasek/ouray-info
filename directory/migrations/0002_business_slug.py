@@ -3,12 +3,15 @@
 from django.db import migrations, models
 
 
+# Add slug field for friendly URLs on businesses.
 class Migration(migrations.Migration):
 
+    # Depends on the initial Business model.
     dependencies = [
         ('directory', '0001_initial'),
     ]
 
+    # Add the slug field to Business.
     operations = [
         migrations.AddField(
             model_name='business',

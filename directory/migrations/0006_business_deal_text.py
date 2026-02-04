@@ -3,12 +3,15 @@
 from django.db import migrations, models
 
 
+# Add a short deal/promo text field to businesses.
 class Migration(migrations.Migration):
 
+    # Requires the Google Place ID field.
     dependencies = [
         ("directory", "0005_business_google_place_id"),
     ]
 
+    # Add the deal_text field to Business.
     operations = [
         migrations.AddField(
             model_name="business",

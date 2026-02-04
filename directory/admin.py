@@ -4,10 +4,13 @@ from django.core.validators import FileExtensionValidator
 
 from .models import Business, Review
 
+# Whitelist image types for uploads in the admin.
 ALLOWED_IMAGE_EXTENSIONS = ["webp", "jpg", "jpeg", "png"]
 
 
+# Custom admin form to validate image uploads.
 class BusinessAdminForm(forms.ModelForm):
+    # Validate hero and logo images against allowed extensions.
     hero_image = forms.ImageField(
         required=False,
         validators=[FileExtensionValidator(allowed_extensions=ALLOWED_IMAGE_EXTENSIONS)],
@@ -21,12 +24,14 @@ class BusinessAdminForm(forms.ModelForm):
         model = Business
         fields = "__all__"
 
+# Admin configuration for business listings.
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
     form = BusinessAdminForm
     list_display = ("name", "category", "website", "google_place_id")
     search_fields = ("name", "category")
     prepopulated_fields = {"slug": ("name",)}
+    # Explicit field order to keep the edit form predictable.
     fields = (
         "name",
         "slug",
@@ -42,6 +47,7 @@ class BusinessAdmin(admin.ModelAdmin):
     )
 
 
+# Admin configuration for review moderation.
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ("business", "rating", "name", "is_approved", "created_at")

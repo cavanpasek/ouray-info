@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
+<!-- Homepage: category bands with business cards -->
 
 {% block title %}ouray.info{% endblock %}
 {% block body_class %}home{% endblock %}
 
 {% block extra_head %}
+  <!-- Preload hero imagery for faster first paint -->
   <link rel="preload" as="image" href="{% static 'directory/img/abrams-image.jpg' %}">
   <link rel="preload" as="image" href="{% static 'directory/img/ouray-hero.jpg' %}">
   <link rel="preload" as="image" href="{% static 'directory/img/ouray-winter.jpg' %}">
 {% endblock %}
 
 {% block content %}
+
+<!-- Sticky top navigation for jump links -->
 
 <nav class="topnav" aria-label="Categories">
   <div class="container topnav-inner">
@@ -20,12 +24,14 @@
   </div>
 </nav>
 
+<!-- Hero band with sort selector -->
 <section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
   <div class="container hero-inner">
     <h1 class="home-title">ouray.info</h1>
     <p class="home-subtitle">Local businesses in Ouray, Colorado.</p>
 
+    <!-- Sort dropdown controls the query string -->
     <form class="sort-form" method="get">
       <label class="sort-label" for="sort">Sort:</label>
       <select id="sort" name="sort" class="sort-select" onchange="this.form.submit()">
@@ -37,14 +43,21 @@
   </div>
 </section>
 
+<!-- Coffee category band -->
 <section id="coffee" class="band band--solid band--coffee">
   <div class="container band-head">
     <h2 class="band-title">Coffee</h2>
     <p class="band-meta">Cafés, espresso, bakeries, and quick stops.</p>
   </div>
 
+  <!-- Scrollable card row for coffee businesses -->
+  <!-- Scrollable card row for restaurants -->
+  <!-- Scrollable card row for shopping -->
+  <!-- Scrollable card row for attractions -->
+  <!-- Scrollable card row for remaining businesses -->
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Coffee businesses">
+      <!-- Render cards for matching category items -->
       {% for b in businesses %}
         {% if b.category and b.category|lower == "coffee" %}
           <article class="card">
@@ -78,6 +91,7 @@
   </div>
 </section>
 
+<!-- Restaurants band with image background -->
 <section id="restaurants" class="band band--image" style="--band-image: url('{% static "directory/img/ouray-hero.jpg" %}');">
   <div class="band-overlay"></div>
 
@@ -88,6 +102,7 @@
 
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Restaurant businesses">
+      <!-- Render cards for matching category items -->
       {% for b in businesses %}
         {% if b.category and b.category|lower == "restaurants" %}
           <article class="card">
@@ -121,6 +136,7 @@
   </div>
 </section>
 
+<!-- Shopping category band -->
 <section id="shopping" class="band band--solid band--shopping">
   <div class="container band-head">
     <h2 class="band-title">Shopping</h2>
@@ -129,6 +145,7 @@
 
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Shopping businesses">
+      <!-- Render cards for matching category items -->
       {% for b in businesses %}
         {% if b.category and b.category|lower == "shopping" %}
           <article class="card">
@@ -173,6 +190,7 @@
 
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Attractions businesses">
+      <!-- Render cards for matching category items -->
       {% for b in businesses %}
         {% if b.category and b.category|lower == "attractions" %}
           <article class="card">
@@ -206,6 +224,7 @@
   </div>
 </section>
 
+<!-- Catch-all band for uncategorized or other items -->
 <section id="other" class="band band--solid band--other">
   <div class="container band-head">
     <h2 class="band-title">Other</h2>
@@ -214,6 +233,7 @@
 
   <div class="container" data-fade="true">
     <div class="card-row" aria-label="Other businesses">
+      <!-- Render cards for businesses outside the named categories -->
       {% for b in businesses %}
         {% if not b.category or b.category|lower not in "coffee restaurants shopping attractions" %}
           <article class="card">

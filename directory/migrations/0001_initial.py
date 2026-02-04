@@ -3,13 +3,17 @@
 from django.db import migrations, models
 
 
+# Initial schema for the directory app.
 class Migration(migrations.Migration):
 
+    # Marks this as the first migration in the app.
     initial = True
 
+    # No dependencies for the initial schema.
     dependencies = [
     ]
 
+    # Create the Business model with core fields.
     operations = [
         migrations.CreateModel(
             name='Business',

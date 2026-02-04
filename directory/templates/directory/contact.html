@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
+<!-- Contact form page -->
 
 {% block title %}Contact | ouray.info{% endblock %}
 {% block body_class %}contact{% endblock %}
 
 {% block extra_head %}
+  <!-- Load reCAPTCHA client -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
+<!-- Hero band for contact page -->
 <section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
   <div class="container hero-inner">
@@ -20,12 +23,14 @@
   </div>
 </section>
 
+<!-- Contact form band -->
 <section class="band band--solid">
   <div class="container">
     {% if error %}
       <p class="band-meta">{{ error }}</p>
     {% endif %}
 
+    <!-- Contact form submission -->
     <form method="post" class="card contact-form" action="{% url 'contact' %}">
       {% csrf_token %}
       <div class="detail-meta-grid">
@@ -43,10 +48,12 @@
         </label>
       </div>
 
+      <!-- reCAPTCHA widget -->
       <div style="margin-top: 16px;">
         <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
       </div>
 
+      <!-- Submit action -->
       <div class="detail-actions" style="margin-top: 16px;">
         <button class="btn" type="submit">Send message</button>
       </div>

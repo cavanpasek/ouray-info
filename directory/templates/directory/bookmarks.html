@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+<!-- Bookmarked businesses page -->
 
 {% block title %}Bookmarks | ouray.info{% endblock %}
 {% block body_class %}bookmarks{% endblock %}
 
 {% block content %}
+<!-- Hero band for bookmarks -->
 <section class="band band--hero" style="--band-image: url('{% static "directory/img/abrams-image.jpg" %}');">
   <div class="band-overlay"></div>
   <div class="container hero-inner">
@@ -16,9 +18,11 @@
   </div>
 </section>
 
+<!-- Bookmarked card list -->
 <section class="band band--solid">
   <div class="container" data-fade="true">
     {% if businesses %}
+      <!-- Render cards for each bookmarked business -->
       <div class="card-row" aria-label="Bookmarked businesses">
         {% for b in businesses %}
           <article class="card">
@@ -54,6 +58,7 @@
         {% endfor %}
       </div>
     {% else %}
+      <!-- Empty state when there are no bookmarks -->
       <p class="band-meta">No bookmarks yet.</p>
     {% endif %}
   </div>

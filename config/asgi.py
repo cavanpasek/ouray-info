@@ -11,6 +11,8 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+# Expose settings for ASGI servers (e.g., Daphne/Uvicorn).
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
+# ASGI application callable used by the server.
 application = get_asgi_application()

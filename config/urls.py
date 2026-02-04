@@ -20,14 +20,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 
+# Base routes: admin and the directory app.
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("directory.urls")),
 ]
 
 if settings.DEBUG:
+    # In development, serve media files directly.
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
+    # In production, map /media/ to the media root without DEBUG.
     urlpatterns += [
         re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     ]

@@ -3,12 +3,15 @@
 from django.db import migrations, models
 
 
+# Add hero and logo image fields to businesses.
 class Migration(migrations.Migration):
 
+    # Requires the slug migration.
     dependencies = [
         ('directory', '0002_business_slug'),
     ]
 
+    # Add image upload fields.
     operations = [
         migrations.AddField(
             model_name='business',

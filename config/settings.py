@@ -23,9 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-$%5q_!c+v)_5$v3ebi%wv60lqm@6-n=zk%*9n5fv=r!6q3xk%-'
+# Pull the secret key from the environment, with a dev-only fallback.
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-insecure-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Interpret DEBUG as a boolean-like env var (e.g., "true").
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 # reCAPTCHA v2 keys (no defaults; must be set via environment variables)
@@ -48,12 +50,14 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() == "true"
 EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "false").lower() == "true"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL") or EMAIL_HOST_USER
 
+# Fixed recipients for contact form submissions.
 CONTACT_RECIPIENTS = [
     "cavanpasek@gmail.com",
     "keatonn@ourayschool.org",
     "oliverc@ourayschool.org",
 ]
 
+# Allowed hosts for production and local development.
 ALLOWED_HOSTS = [
     "ouray-info.onrender.com",
     "ouray.info",
@@ -62,6 +66,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+# Trusted origins for CSRF in production.
 CSRF_TRUSTED_ORIGINS = [
     "https://ouray-info.onrender.com",
     "https://ouray.info",
@@ -93,6 +98,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Root URL configuration module.
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -110,12 +116,14 @@ TEMPLATES = [
     },
 ]
 
+# WSGI entry point for production servers.
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# Allow a single DATABASE_URL for hosted deployments.
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
@@ -175,9 +183,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Collected static files directory for production.
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Enable WhiteNoise compressed static file storage.
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# Media uploads stored alongside the project.
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

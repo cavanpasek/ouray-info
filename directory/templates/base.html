@@ -1,28 +1,37 @@
 {% load static %}
+<!-- Base layout shared by all pages -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Per-page title hook -->
   <title>{% block title %}ouray.info{% endblock %}</title>
 
+  <!-- Font loading for the site typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Site favicon -->
   <link rel="icon" type="image/png" href="{% static 'directory/img/ouray-info-favicon.png' %}">
 
+  <!-- Global stylesheet -->
   <link rel="stylesheet" href="{% static 'directory/css/site.css' %}">
+  <!-- Optional per-page head content -->
   {% block extra_head %}{% endblock %}
 </head>
 
+<!-- Body class/style hooks allow page-specific styling -->
 <body class="{% block body_class %}{% endblock %}" style="{% block body_style %}{% endblock %}">
+  <!-- Main content outlet -->
   <main>
     {% block content %}{% endblock %}
   </main>
 
   <script>
     (function () {
+      // Shared behavior: top nav blur increases on scroll.
       // Topnav blur fades in as you scroll (home + detail pages)
       const topnav = document.querySelector('.topnav');
       if (topnav) {
@@ -42,6 +51,7 @@
         updateTopnav();
       }
 
+      // Home-only scroll fade effect for elements that opt in.
       // Fade/move only on home, and only on elements that opt-in.
       if (!document.body.classList.contains('home')) return;
 
@@ -83,6 +93,7 @@
     })();
   </script>
 
+  <!-- Optional per-page scripts -->
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
