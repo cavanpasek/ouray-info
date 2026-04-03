@@ -12,7 +12,7 @@ from django.db.models.functions import Coalesce
 
 from .models import Business, Review
 
-# Small in-memory cache to reduce Google Places API calls per place ID.
+# Small in-memory cache to reduce Google Places API calls per place ID [HOW COULD WE MINIMIZE CACHE RELIANCE???]
 GOOGLE_CACHE_TTL = 300
 _google_cache = {}
 
@@ -26,7 +26,7 @@ def _annotate_reviews(queryset):
     )
 
 
-# Convert a 1-5 rating into a percentage for star-fill UI.
+# Convert a 1-5 rating into a percentage for star-fill [LEAVE THIS FOR NOW, USED IN TEMPLATE EVEN THOUGH NO STARS]
 def _rating_to_percent(rating):
     if not rating:
         return 0
@@ -35,9 +35,9 @@ def _rating_to_percent(rating):
     return round(rounded * 100, 2)
 
 
-# Fetch place details from Google Places API with defensive error handling.
+# Fetch place details from Google Places API
 def get_google_place_data(place_id):
-    # Default payload mirrors template expectations even on error.
+    # Default payload mirrors template expectations even on errors, keeps UI -->CONSISTENT<--
     defaults = {
         "google_rating": None,
         "google_count": None,
@@ -48,18 +48,17 @@ def get_google_place_data(place_id):
         "google_error_label": "",
     }
 
-    # Skip API calls when missing config or ID.
+    # Skip API calls when missing config or ID: ez error managment
     if not place_id or not settings.GOOGLE_MAPS_API_KEY:
         return defaults
 
     now = time.time()
     cached = _google_cache.get(place_id)
-    # Return cached data if still fresh.
+    # Return cached data if still fresh, [MIGHT WANT TO WORK ON DEVELOPING W/ OUT CACHE RELIANCE]
     if cached and (now - cached["ts"] < GOOGLE_CACHE_TTL):
         return cached["data"]
 
-    try:
-        # Build Places Details request with the fields the UI needs.
+    try: # Makes API Url request, then finds https and references information.
         query = urllib.parse.urlencode(
             {
                 "place_id": place_id,

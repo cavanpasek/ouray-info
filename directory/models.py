@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.text import slugify
 
 # Primary directory listing model.
-class Business(models.Model):
+class Business(models.Model): # BEAUTIFUL, builds the database tables (CARDS) for listings
     # Core business identity and display fields.
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True, blank=True)

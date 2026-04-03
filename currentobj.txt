@@ -1,6 +1,1 @@
-OBJECTIVE: Change business card's "2 Reviews *****" format for ouray.info reviews to "ouray.info * [numerica rating (1-5 scale)] ([number of total ouray.info reviews])"
-
-SCOPE (DO ONLY THIS)
-
-Deliverables:
-- List the exact files you will modify before implementing.
+# All's good!---just need to make sure that VS Code updates don't mess up the handshake between VS Code and GitHub
