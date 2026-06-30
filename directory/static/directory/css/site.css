@@ -772,9 +772,12 @@ section[id]{ scroll-margin-top: 86px; }
 }
 .news-card {
   background: var(--card);
-  border: 1px solid var(--stroke);
+  border: 1px solid rgba(255,255,255,0.18);
   border-radius: var(--radius);
   padding: 20px 22px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
   gap: 8px;
