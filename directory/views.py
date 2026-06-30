@@ -1,11 +1,15 @@
 import json
+import os
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
+import anthropic
+
 from django.conf import settings
 from django.core.mail import send_mail
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Avg, Count, Q
 from django.db.models.functions import Coalesce
@@ -552,3 +556,63 @@ def contact(request):
 # Simple success confirmation page.
 def contact_success(request):
     return render(request, "directory/contact_success.html")
+
+
+# Chatbot endpoint: accepts a user message and returns a Claude reply with business context.
+def chatbot(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        message = data.get("message", "").strip()[:1000]
+    except (json.JSONDecodeError, KeyError):
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+    if not message:
+        return JsonResponse({"error": "No message provided"}, status=400)
+
+    # Build business context from the full directory.
+    businesses = Business.objects.all().order_by("name")
+    entries = []
+    for b in businesses:
+        lines = [f"Name: {b.name}"]
+        if b.category:
+            lines.append(f"Category: {b.category}")
+        if b.description:
+            lines.append(f"Description: {b.description}")
+        if b.address:
+            lines.append(f"Address: {b.address}")
+        if b.phone:
+            lines.append(f"Phone: {b.phone}")
+        if b.website:
+            lines.append(f"Website: {b.website}")
+        if b.deal_text:
+            lines.append(f"Current deal: {b.deal_text}")
+        entries.append("\n".join(lines))
+
+    business_context = "\n\n---\n\n".join(entries)
+
+    system_prompt = (
+        "You are a friendly local guide for Ouray, Colorado — a small mountain town known as the "
+        "'Switzerland of America.' You help visitors and locals discover businesses in town.\n\n"
+        "Use the business directory below to answer questions about local restaurants, shops, "
+        "activities, and services. Keep answers concise and friendly. If something is not in the "
+        "directory, say you don't have that info and suggest they browse ouray.info for the full listing. "
+        "Never make up details that aren't in the data.\n\n"
+        f"OURAY BUSINESS DIRECTORY:\n\n{business_context}"
+    )
+
+    try:
+        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+        response = client.messages.create(
+            model="claude-opus-4-8",
+            max_tokens=500,
+            system=system_prompt,
+            messages=[{"role": "user", "content": message}],
+        )
+        reply = response.content[0].text
+    except Exception:
+        return JsonResponse({"error": "Sorry, I couldn't reach the AI right now. Try again in a moment."}, status=502)
+
+    return JsonResponse({"reply": reply})

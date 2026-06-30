@@ -6,7 +6,7 @@
   --baltic: #005E7C;
   --ink: #040F16;
 
-  /* gunmetal + ocean */
+  /* gunmetal + ocean --- KEATON's chosen color scheme.*/
   --accent: #3A6F84;
   --accent2: #2E5868;
 
@@ -18,7 +18,7 @@
   --radius: 18px;
 
   --card: rgba(0, 18, 66, 0.78);
-  --card-detail: rgba(0, 18, 66, 0.92);
+  --card-detail: rgba(0, 18, 66, 0.92); /*PRUSSIAN BLUE*/
 
   /* For snowy section text */
   --snow-text: rgba(4, 15, 22, 0.92);

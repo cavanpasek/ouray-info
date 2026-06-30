@@ -1,1 +1,6 @@
 # All's good!---just need to make sure that VS Code updates don't mess up the handshake between VS Code and GitHub
+# KEEP AN EYE ON render.com's server maintenance on SQL database
+
+include specials for locals as well, "PREFERED BY LOCALS"
+
+ADD IN ATTRACTIONS OVERALL
