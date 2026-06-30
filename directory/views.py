@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Avg, Count, Q
 from django.db.models.functions import Coalesce
 
-from .models import Business, Review
+from .models import Business, Review, NewsPost
 
 # Small in-memory cache to reduce Google Places API calls per place ID [HOW COULD WE MINIMIZE CACHE RELIANCE???]
 GOOGLE_CACHE_TTL = 300
@@ -266,7 +266,8 @@ def home(request):
         sort = "top"
         businesses.sort(key=lambda b: (-(b.avg_rating or 0), -b.review_count, b.name))
 
-    return render(request, "home.html", {"businesses": businesses, "sort": sort})
+    recent_news = NewsPost.objects.filter(is_published=True).order_by("-published_at")[:4]
+    return render(request, "home.html", {"businesses": businesses, "sort": sort, "recent_news": recent_news})
 
 # Business detail page with combined Ouray + Google reviews.
 def business_detail(request, slug):
@@ -558,6 +559,12 @@ def contact_success(request):
     return render(request, "directory/contact_success.html")
 
 
+# News list page: all published posts, newest first.
+def news(request):
+    posts = NewsPost.objects.filter(is_published=True).order_by("-published_at")
+    return render(request, "directory/news.html", {"posts": posts})
+
+
 # Chatbot endpoint: accepts a user message and returns a Claude reply with business context.
 def chatbot(request):
     if request.method != "POST":
@@ -593,14 +600,25 @@ def chatbot(request):
 
     business_context = "\n\n---\n\n".join(entries)
 
+    # Include recent news in the system prompt.
+    recent_news = NewsPost.objects.filter(is_published=True).order_by("-published_at")[:10]
+    news_lines = []
+    for post in recent_news:
+        line = f"[{post.published_at.strftime('%b %d, %Y')}] {post.source_name}: {post.title}"
+        if post.summary:
+            line += f" — {post.summary[:200]}"
+        news_lines.append(line)
+    news_context = "\n".join(news_lines) if news_lines else "No recent news available."
+
     system_prompt = (
         "You are a friendly local guide for Ouray, Colorado — a small mountain town known as the "
-        "'Switzerland of America.' You help visitors and locals discover businesses in town.\n\n"
-        "Use the business directory below to answer questions about local restaurants, shops, "
-        "activities, and services. Keep answers concise and friendly. If something is not in the "
-        "directory, say you don't have that info and suggest they browse ouray.info for the full listing. "
-        "Never make up details that aren't in the data.\n\n"
-        f"OURAY BUSINESS DIRECTORY:\n\n{business_context}"
+        "'Switzerland of America.' You help visitors and locals discover businesses and stay up to date "
+        "on local news.\n\n"
+        "Use the business directory and recent news below to answer questions. Keep answers concise "
+        "and friendly. If something is not in the data, say so and suggest they browse ouray.info. "
+        "Never make up details.\n\n"
+        f"OURAY BUSINESS DIRECTORY:\n\n{business_context}\n\n"
+        f"RECENT LOCAL NEWS:\n\n{news_context}"
     )
 
     try:

@@ -8,6 +8,7 @@ from .views import (
     bookmark_toggle,
     bookmarks,
     chatbot,
+    news,
 )
 
 # Public routes for the directory app.
@@ -20,4 +21,5 @@ urlpatterns = [
     path("business/<slug:slug>/review/", review_submit, name="review_submit"),
     path("business/<slug:slug>/bookmark/", bookmark_toggle, name="bookmark_toggle"),
     path("chatbot/", chatbot, name="chatbot"),
+    path("news/", news, name="news"),
 ]

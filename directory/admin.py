@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.core.validators import FileExtensionValidator
 
-from .models import Business, Review
+from .models import Business, Review, NewsPost
 
 # Whitelistinggggggg.
 ALLOWED_IMAGE_EXTENSIONS = ["webp", "jpg", "jpeg", "png"]
@@ -46,6 +46,15 @@ class BusinessAdmin(admin.ModelAdmin): # creates admin interface using django's 
         "hero_image", # omit?
         "google_place_id",
     )
+
+
+@admin.register(NewsPost)
+class NewsPostAdmin(admin.ModelAdmin):
+    list_display = ("title", "source_name", "published_at", "is_published")
+    list_filter = ("is_published", "source_name")
+    search_fields = ("title", "summary")
+    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("guid",)
 
 
 # Admin configuration for review moderation.

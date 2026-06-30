@@ -1,6 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+from django.utils import timezone
 
 # Primary directory listing model.
 class Business(models.Model): # BEAUTIFUL, builds the database tables (CARDS) for listings
@@ -55,3 +56,33 @@ class Review(models.Model):
     def __str__(self):
         # Compact admin display label.
         return f"{self.business.name} ({self.rating})"
+
+
+class NewsPost(models.Model):
+    title = models.CharField(max_length=300)
+    slug = models.SlugField(max_length=320, unique=True, blank=True)
+    summary = models.TextField(blank=True)
+    source_name = models.CharField(max_length=200, blank=True)
+    source_url = models.URLField(blank=True)
+    image_url = models.URLField(blank=True)
+    # guid prevents duplicate imports from RSS feeds
+    guid = models.CharField(max_length=500, unique=True)
+    published_at = models.DateTimeField(default=timezone.now)
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-published_at"]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.title)[:300]
+            slug = base
+            n = 1
+            while NewsPost.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{n}"
+                n += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
