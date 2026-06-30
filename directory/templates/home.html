@@ -270,25 +270,28 @@
 
 <!-- Local news preview band -->
 <section id="news" class="band band--solid">
-  <div class="container band-head">
-    <h2 class="band-title">Local News</h2>
-    <p class="band-meta">Latest from Ouray County.</p>
-  </div>
   <div class="container" data-fade="true">
+    <div class="news-band-head">
+      <div class="news-band-head-left">
+        <h2 class="band-title">Local News</h2>
+        <p class="band-meta">Latest updates from Ouray County.</p>
+      </div>
+      <a class="news-view-all" href="{% url 'news' %}">View all &rarr;</a>
+    </div>
     {% if recent_news %}
       <div class="news-grid">
         {% for post in recent_news %}
           <article class="news-card">
-            <p class="news-date">{{ post.published_at|date:"M j, Y" }} &middot; {{ post.source_name }}</p>
-            <h3 class="news-title">
+            <div class="news-card-meta">
+              <span class="news-label">{{ post.source_name }}</span>
+              <span class="news-date">{{ post.published_at|date:"M j, Y" }}</span>
+            </div>
+            <h3 class="news-card-title">
               {% if post.source_url %}<a href="{{ post.source_url }}" target="_blank" rel="noopener">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}
             </h3>
-            {% if post.summary %}<p class="news-summary">{{ post.summary|truncatechars:160 }}</p>{% endif %}
+            {% if post.summary %}<p class="news-card-summary">{{ post.summary|truncatechars:140 }}</p>{% endif %}
           </article>
         {% endfor %}
-      </div>
-      <div class="news-footer">
-        <a class="btn" href="{% url 'news' %}">All news &rarr;</a>
       </div>
     {% else %}
       <p class="band-meta">No news yet — check back soon.</p>

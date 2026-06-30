@@ -11,33 +11,44 @@
   </div>
 </nav>
 
-<section class="band band--hero" style="min-height:30vh; padding: 120px 0 56px;">
-  <div class="band-overlay"></div>
-  <div class="container hero-inner">
-    <h1 class="home-title">local news</h1>
-    <p class="home-subtitle">What's happening in Ouray County.</p>
+<section class="news-hero">
+  <div class="container news-hero-inner">
+    <div>
+      <h1>local news</h1>
+      <p>What's happening in Ouray County.</p>
+    </div>
+    {% if posts %}
+      <span class="news-count-chip">{{ posts|length }} post{{ posts|length|pluralize }}</span>
+    {% endif %}
   </div>
 </section>
 
-<section class="band band--solid">
+<section class="band band--solid" style="padding-top: 40px;">
   <div class="container">
     {% if posts %}
-      <div class="news-grid news-grid--full">
+      <div class="news-list">
         {% for post in posts %}
-          <article class="news-card">
-            <p class="news-date">{{ post.published_at|date:"F j, Y" }} &middot; {{ post.source_name }}</p>
-            <h2 class="news-title">
-              {% if post.source_url %}<a href="{{ post.source_url }}" target="_blank" rel="noopener">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}
-            </h2>
-            {% if post.summary %}<p class="news-summary">{{ post.summary }}</p>{% endif %}
-            {% if post.source_url %}
-              <a class="btn btn-ghost" href="{{ post.source_url }}" target="_blank" rel="noopener">Read more &rarr;</a>
-            {% endif %}
+          <article class="news-list-item">
+            <div class="news-list-date">
+              {{ post.published_at|date:"M j" }}<br>{{ post.published_at|date:"Y" }}
+              <span class="news-list-source">{{ post.source_name }}</span>
+            </div>
+            <div class="news-list-body">
+              <h2 class="news-list-title">
+                {% if post.source_url %}<a href="{{ post.source_url }}" target="_blank" rel="noopener">{{ post.title }}</a>{% else %}{{ post.title }}{% endif %}
+              </h2>
+              {% if post.summary %}
+                <p class="news-list-summary">{{ post.summary }}</p>
+              {% endif %}
+              {% if post.source_url %}
+                <a class="news-list-link" href="{{ post.source_url }}" target="_blank" rel="noopener">Read full story &rarr;</a>
+              {% endif %}
+            </div>
           </article>
         {% endfor %}
       </div>
     {% else %}
-      <p class="band-meta">No news yet — check back soon.</p>
+      <p class="band-meta" style="text-align:center; padding: 48px 0;">No news yet — check back soon.</p>
     {% endif %}
   </div>
 </section>
